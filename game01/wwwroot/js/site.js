@@ -39,15 +39,8 @@ canvas.addEventListener('mouseup', function (evt) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    /*
-    if (ctx.setLineDash !== undefined) {
-        ctx.setLineDash([0, canvas.width]);
-    }
-    if (ctx.mozDash !== undefined) {
-        ctx.mozDash = [0, canvas.width];
-    }
-    */
     ctx.beginPath();
+    ctx.setLineDash([1, 5]);
     ctx.lineWidth = "2";
     ctx.strokeStyle = "green";
     ctx.moveTo(0, canvas.height/2);
@@ -55,6 +48,7 @@ function draw() {
     ctx.stroke();
 
     ctx.strokeStyle = "black";
+    ctx.setLineDash([]);
     ctx.fillStyle = "#ffe6e6";
     for (var i = 0; i < unitsRed.length; i++) {
         ctx.beginPath();
