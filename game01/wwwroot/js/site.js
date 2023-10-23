@@ -19,20 +19,27 @@ canvas.addEventListener('mouseup', function (evt) {
     var mousePos = getMousePos(canvas, evt);
     var xPos = x;
     var yPos = y;
-    var wVal = mousePos.x - x;
-    var hVal = mousePos.y - y;
-    var idRects = unitsRed.length;
-    if (wVal < 0) {
-        wVal = Math.abs(wVal);
-        xPos = x - wVal;
+    var radius = Math.pow(20 + 20, 2);
+    var pushUnit = true;
+
+    for (let i = 0; i < unitsRed.length; i++) {
+        var distance = Math.pow(unitsRed[i].x - x, 2) + Math.pow(unitsRed[i].y - y, 2);
+
+        console.log(x + ", " + y + ", " + distance + ", " + radius);
+        
+        if (distance <= radius) {
+            console.log("false");
+            pushUnit = false;
+        }
     }
-    if (hVal < 0) {
-        hVal = Math.abs(hVal);
-        yPos = y - hVal;
+    
+    if (pushUnit) {
+        unitsRed.push({ x: xPos, y: yPos, id: unitsRed.length });
     }
-    unitsRed.push({ x: xPos, y: yPos, id: idRects });
+
     x = mousePos.x;
     y = mousePos.y;
+
     draw();
 }, false);
 
