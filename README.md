@@ -9,3 +9,7 @@ The overall objective of this simple game is to have players think outside the b
 ![Design 2](Resources/design02.png)
 ![Design 2](Resources/design03.png)
 ![Design 2](Resources/design04.png)
+
+-----
+
+[An example of an experiment from this](http://github.com/ericung/topologyoffootwork)
