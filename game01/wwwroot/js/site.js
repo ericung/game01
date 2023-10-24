@@ -21,6 +21,7 @@ canvas.addEventListener('mouseup', function (evt) {
     var yPos = y;
     var radius = Math.pow(20 + 20, 2);
     var pushUnit = true;
+    var units = document.getElementById("units").value;
 
     for (let i = 0; i < unitsRed.length; i++) {
         var distance = Math.pow(unitsRed[i].x - x, 2) + Math.pow(unitsRed[i].y - y, 2);
@@ -33,7 +34,7 @@ canvas.addEventListener('mouseup', function (evt) {
         }
     }
     
-    if (pushUnit) {
+    if ((pushUnit)&&(unitsRed.length < units)) {
         unitsRed.push({ x: xPos, y: yPos, id: unitsRed.length });
     }
 
@@ -79,25 +80,4 @@ function getMousePos(canvas, evt) {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
     };
-}
-
-function generate() {
-    $.ajax({
-        method: "POST",
-        url: "Home/Generate",
-        data: {
-            rectangles: JSON.stringify(unitsRed),
-            submits: JSON.stringify(submits),
-            radios: JSON.stringify(radios)
-        }
-    })
-        .done(function (msg) {
-            $('#generatedHtml').text(msg);
-            $('#generatedHtml').val(msg);
-            const iframe = document.getElementById("renderedhtml");
-            iframe.width = "490px";
-            iframe.height = "330px";
-            iframe.border = "1px solid #000000";
-            iframe.srcdoc = msg;
-        });
 }

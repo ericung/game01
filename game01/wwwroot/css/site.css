@@ -1,18 +1,18 @@
-html {
-  font-size: 14px;
+#page {
+    margin-left: 200px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+#maincontent {
+    float: right;
+    width: 100%;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+#menuleftcontent {
+    float: left;
+    width: 200px;
+    margin-left: -200px;
 }
 
-body {
-  margin-bottom: 60px;
+#clearingdiv {
+    clear: both;
 }

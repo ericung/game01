@@ -2,7 +2,18 @@
     ViewData["Title"] = "Home Page";
 }
 
-<canvas id="field" width="1400" height="800" style="border:1px solid #000000;"></canvas>
+<div id="page">
+    <div id="maincontent">
+        <canvas id="field" width="1400" height="800" style="border:1px solid #000000;"></canvas>
+    </div>
+    <div id="menuleftcontent">
+        <form>
+            <b>Units on each side</b>
+            <input type="text" id="units"/>
+        </form>
+    </div>
+    <div id="clearingdiv"></div>
+</div>
 
 <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
 <script src="~/js/chat.js"></script>

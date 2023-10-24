@@ -22,7 +22,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-app.MapHub<ConnectionHub>("/chatHub");
+app.MapHub<ConnectionHub>("/messageHub");
 
 app.MapControllerRoute(
     name: "default",
