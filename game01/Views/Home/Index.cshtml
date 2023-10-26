@@ -1,4 +1,6 @@
-﻿@{
+﻿@model HomeViewModel;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -8,12 +10,13 @@
     </div>
     <div id="menuleftcontent">
         <form>
+            <b>User</b>
+            <input id="user" value="@Model.User" disabled/>
+            <b>Network</b>
+            <textarea id="network"></textarea>
             <b>Units on each side</b>
             <input type="text" id="units"/>
         </form>
     </div>
     <div id="clearingdiv"></div>
 </div>
-
-<script src="~/js/signalr/dist/browser/signalr.min.js"></script>
-<script src="~/js/chat.js"></script>

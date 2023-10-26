@@ -1,13 +1,51 @@
-﻿var canvas = document.getElementById("field");
+﻿"use strict";
+var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+
+var canvas = document.getElementById("field");
 var ctx = canvas.getContext("2d");
 ctx.font = "30px Arial";
 var x = 0;
 var y = 0;
 var unitsRed = [];
 var unitsBlue = [];
-var side = "red";
+var user = document.getElementById("user").value;
+var connectionId;
 
-draw();
+let connected = false;
+
+connection.on("ReceiveMessage", function (user, message) {
+});
+
+connection.on("Connected", function (connectionString) {
+    connectionId = connectionString;
+    document.getElementById("network").value = connectionId;
+})
+
+connection.start().then(function (conId) {
+    connected = true;
+}).catch(function (err) {
+    return "";
+});
+
+async function WaitForConnection() {
+    while (true) {
+        if (connected) {
+            return;
+        }
+        else {
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+    }
+}
+
+
+$(document).ready(async function () {
+    await WaitForConnection();
+    connection.invoke("Connect").catch(function (err) {
+        return console.error(err.toString());
+    });
+    draw();
+});
 
 canvas.addEventListener('mousedown', function (evt) {
     var mousePos = getMousePos(canvas, evt);
@@ -25,16 +63,18 @@ canvas.addEventListener('mouseup', function (evt) {
 
     for (let i = 0; i < unitsRed.length; i++) {
         var distance = Math.pow(unitsRed[i].x - x, 2) + Math.pow(unitsRed[i].y - y, 2);
-
-        console.log(x + ", " + y + ", " + distance + ", " + radius);
         
         if (distance <= radius) {
-            console.log("false");
             pushUnit = false;
         }
     }
     
-    if ((pushUnit)&&(unitsRed.length < units)) {
+    if ((user=="red")&&(y <= 400 - 20)&&(pushUnit)&&(unitsRed.length < units)) {
+        connection.invoke("SendMessage", "red", {x: xPos, y: yPos}).catch(function (err) {
+            return console.error(err.toString());
+        });
+        evt.preventDefault();
+
         unitsRed.push({ x: xPos, y: yPos, id: unitsRed.length });
     }
 
@@ -43,6 +83,10 @@ canvas.addEventListener('mouseup', function (evt) {
 
     draw();
 }, false);
+
+function init() {
+    document.getElementById("user").value = user;
+}
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
