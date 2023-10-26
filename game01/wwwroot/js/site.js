@@ -18,7 +18,11 @@ connection.on("ReceiveMessage", function (user, message) {
 
 connection.on("Connected", function (connectionString) {
     connectionId = connectionString;
-    document.getElementById("network").value = connectionId;
+    var datalist = document.getElementById("networks");
+    var option = document.createElement("option");
+    option.value = connectionId;
+    datalist.appendChild(option);
+    document.getElementById("user").value = user;
 })
 
 connection.start().then(function (conId) {
@@ -38,13 +42,18 @@ async function WaitForConnection() {
     }
 }
 
-
 $(document).ready(async function () {
     await WaitForConnection();
-    connection.invoke("Connect").catch(function (err) {
+
+    await connection.invoke("Connect").catch(function (err) {
         return console.error(err.toString());
     });
+    $("#network").attr("value", connectionId);
     draw();
+});
+
+document.getElementById("network").addEventListener("change", function (evt) {
+    connectionId = evt.value;
 });
 
 canvas.addEventListener('mousedown', function (evt) {
@@ -85,7 +94,6 @@ canvas.addEventListener('mouseup', function (evt) {
 }, false);
 
 function init() {
-    document.getElementById("user").value = user;
 }
 
 function draw() {

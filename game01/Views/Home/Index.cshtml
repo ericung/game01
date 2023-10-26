@@ -13,7 +13,8 @@
             <b>User</b>
             <input id="user" value="@Model.User" disabled/>
             <b>Network</b>
-            <textarea id="network"></textarea>
+            <input list="networks" id="network" name="network">
+            <datalist id="networks"></datalist>
             <b>Units on each side</b>
             <input type="text" id="units"/>
         </form>
