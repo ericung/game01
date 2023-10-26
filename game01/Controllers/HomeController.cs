@@ -6,42 +6,17 @@ namespace game01.Controllers
 {
     public class HomeController : Controller
     {
-        static List<string> Users;
-
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
-            Users = new List<string>();
             _logger = logger;
         }
 
         public IActionResult Index()
         {
             HomeViewModel model = new HomeViewModel();
-            string user = "";
-            switch (Users.Count)
-            {
-                case 0:
-                    {
-                        user = "red";
-                        Users.Add("red");
-                        break;
-                    }
-                case 1:
-                    {
-                        user = "blue";
-                        Users.Add("blue");
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-
-            model.User = user;
-
+            
             return View(model);
         }
 

@@ -8,20 +8,24 @@ var x = 0;
 var y = 0;
 var unitsRed = [];
 var unitsBlue = [];
-var user = document.getElementById("user").value;
-var connectionId;
+let user;
+let connectionId;
 
 let connected = false;
 
 connection.on("ReceiveMessage", function (user, message) {
 });
 
-connection.on("Connected", function (connectionString) {
-    connectionId = connectionString;
+connection.on("Connected", function (userInfo, conns) {
+    connectionId = userInfo.connectionId;
     var datalist = document.getElementById("networks");
-    var option = document.createElement("option");
-    option.value = connectionId;
-    datalist.appendChild(option);
+    for (let i = 0; i < conns.length; i++) {
+        var newOption = document.createElement("option");
+        newOption.value = conns[i];
+        datalist.appendChild(newOption);
+    }
+    console.log(userInfo.userIdentifier);
+    user = userInfo.userName;
     document.getElementById("user").value = user;
 })
 
