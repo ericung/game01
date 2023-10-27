@@ -1,4 +1,4 @@
-using Objects;
+using Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 
-namespace Objects
+namespace Hubs
 {
 
     public class ConnectionHub : Hub
     {
+        // When the application scales, we'll need to put this information in a cache.
         private static ConcurrentDictionary<string, User> ConnectionMap = new ConcurrentDictionary<string, User>();
         private static ConcurrentDictionary<string, List<User>> GroupMap = new ConcurrentDictionary<string, List<User>>();
 
