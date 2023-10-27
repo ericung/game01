@@ -17,7 +17,11 @@
             <datalist id="networks"></datalist>
             <b>Group</b>
             <input id="group" name="group"/>
-            <b>Units on each side</b>
+            <input list="groups" id="groupList" name="groupList"/>
+            <datalist id="groups"></datalist>
+            <input type="button" value="Refresh Groups" onclick="refreshGroups()"/>
+            <br />
+            <b>Units</b>
             <input type="text" id="units"/>
         </form>
     </div>

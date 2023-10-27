@@ -71,6 +71,11 @@ namespace Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("RemovedGroup", ConnectionMap[Context.ConnectionId]);
         }
 
+        public async Task GetGroups(string connectionId)
+        {
+            await Clients.Client(connectionId).SendAsync("SendGroupList", GroupMap.Keys);
+        }
+
         public override Task OnConnectedAsync()
         {
             return base.OnConnectedAsync();

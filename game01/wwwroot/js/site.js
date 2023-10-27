@@ -1,7 +1,6 @@
 ﻿"use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 
-
 let connected = false;
 
 connection.on("ReceiveMessage", function (user, message) {
@@ -26,7 +25,16 @@ connection.on("RemovedGroup", function (userInfo) {
     document.getElementById("group").value = userInfo.group; 
 });
 
-connection.start().then(function (conId) {
+connection.on("SendGroupList", function (groupList) {
+    var groups = document.getElementById("groups");
+    for (let i = 0; i < groupList.length; i++) {
+        var newOption = document.createElement("option");
+        newOption.value = groupList[i];
+        groups.appendChild(newOption);
+    }
+});
+
+connection.start().then(function () {
     connected = true;
 }).catch(function (err) {
     return "";
@@ -169,4 +177,10 @@ function getMousePos(canvas, evt) {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
     };
+}
+
+async function refreshGroups() {
+    await connection.invoke("GetGroups", connectionId).catch(function (err) {
+        return console.error(err.toString());
+    });
 }
