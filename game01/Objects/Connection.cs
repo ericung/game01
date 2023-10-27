@@ -5,19 +5,69 @@ using System.Net.WebSockets;
 
 namespace Objects
 {
-    
+
     public class ConnectionHub : Hub
     {
-        private static ConcurrentDictionary<string, List<User>> ConnectionMap = new ConcurrentDictionary<string, List<User>>();
+        private static ConcurrentDictionary<string, User> ConnectionMap = new ConcurrentDictionary<string, User>();
+        private static ConcurrentDictionary<string, List<User>> GroupMap = new ConcurrentDictionary<string, List<User>>();
 
-        public Task JoinGroup(string groupName)
+        public async Task JoinGroup(string connectionId, string groupName)
         {
-            return Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            try
+            {
+                GroupMap.TryAdd(groupName, new List<User>());
+                await Groups.AddToGroupAsync(connectionId, groupName);
+
+                switch (GroupMap[groupName].Count)
+                {
+                    case 0:
+                        ConnectionMap[connectionId].UserName = "red";
+                        break;
+                    case 1:
+                        ConnectionMap[connectionId].UserName = "blue";
+                        break;
+                    default:
+                        ConnectionMap[connectionId].UserName = "";
+                        break;
+                }
+
+                ConnectionMap[connectionId].Group = groupName;
+                GroupMap[groupName].Add(ConnectionMap[connectionId]);
+            }
+            catch
+            {
+
+            }
+
+            await Clients.Client(connectionId).SendAsync("JoinedGroup", ConnectionMap[connectionId]);
         }
 
-        public Task LeaveGroup(string groupName)
+        public async Task LeaveGroup(string connectionId, string groupName)
         {
-            return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            try
+            {
+                if (GroupMap.ContainsKey(groupName))
+                {
+                    await Groups.RemoveFromGroupAsync(connectionId, groupName);
+                    ConnectionMap[connectionId].Group = "";
+                    GroupMap[groupName].Remove(ConnectionMap[connectionId]);
+                    List<User> output;
+                    if (GroupMap[groupName].Count == 0)
+                    {
+                        GroupMap.TryRemove(groupName, out output);
+                        foreach(User user in output)
+                        {
+                            user.Group = String.Empty;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+
+            await Clients.Client(Context.ConnectionId).SendAsync("RemovedGroup", ConnectionMap[Context.ConnectionId]);
         }
 
         public override Task OnConnectedAsync()
@@ -27,39 +77,20 @@ namespace Objects
 
         public async Task Connect()
         {
-
-            if (!ConnectionMap.ContainsKey(Context.ConnectionId))
-            {
-                ConnectionMap.TryAdd(Context.ConnectionId, new List<User> { new User
+            ConnectionMap.TryAdd(Context.ConnectionId,
+                new User
                 {
                     ConnectionId = Context.ConnectionId,
-                    UserIdentifier = Context.User.Identity.Name,
-                    UserName = "red"
-                } });
-
-                await Clients.All.SendAsync("Connected", ConnectionMap[Context.ConnectionId][0], ConnectionMap.Keys);
-
-                return;
-            }
-            else if (ConnectionMap[Context.ConnectionId].Count == 1)
-            {
-                ConnectionMap[Context.ConnectionId].Add(new User
-                {
-                    ConnectionId = Context.ConnectionId,
-                    UserIdentifier = Context.User.Identity.Name,
-                    UserName = "blue"
+                    UserName = "red",
+                    Group = String.Empty
                 });
 
-                await Clients.All.SendAsync("Connected", ConnectionMap[Context.ConnectionId][1], ConnectionMap.Keys);
-
-                return;
-            }
-            await Clients.All.SendAsync("Connected", null);
+            await Clients.Client(Context.ConnectionId).SendAsync("Connected", ConnectionMap[Context.ConnectionId]);
         }
 
         public async Task SendMessage(string user,  Unit message)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", user, message);
         }
     }
 }

@@ -1,33 +1,30 @@
 ﻿"use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 
-var canvas = document.getElementById("field");
-var ctx = canvas.getContext("2d");
-ctx.font = "30px Arial";
-var x = 0;
-var y = 0;
-var unitsRed = [];
-var unitsBlue = [];
-let user;
-let connectionId;
 
 let connected = false;
 
 connection.on("ReceiveMessage", function (user, message) {
 });
 
-connection.on("Connected", function (userInfo, conns) {
+connection.on("Connected", function (userInfo) {
     connectionId = userInfo.connectionId;
     var datalist = document.getElementById("networks");
-    for (let i = 0; i < conns.length; i++) {
-        var newOption = document.createElement("option");
-        newOption.value = conns[i];
-        datalist.appendChild(newOption);
-    }
-    console.log(userInfo.userIdentifier);
+    var newOption = document.createElement("option");
+    newOption.value = connectionId;
+    datalist.appendChild(newOption);
     user = userInfo.userName;
     document.getElementById("user").value = user;
-})
+});
+
+connection.on("JoinedGroup", function (userInfo) {
+    document.getElementById("user").value = userInfo.userName; 
+    document.getElementById("group").value = userInfo.group; 
+});
+
+connection.on("RemovedGroup", function (userInfo) {
+    document.getElementById("group").value = userInfo.group; 
+});
 
 connection.start().then(function (conId) {
     connected = true;
@@ -45,6 +42,42 @@ async function WaitForConnection() {
         }
     }
 }
+
+var typingTimer;
+var doneTypingInterval = 5000;
+var input = document.getElementById("group");
+var oldGroup = input.value;
+var newGroup;
+
+input.addEventListener('keyup', function () {
+    clearTimeout(typingTimer);
+    newGroup = input.value;
+    typingTimer = setTimeout(doneTyping, doneTypingInterval);
+});
+
+input.addEventListener('keydown', function () {
+    clearTimeout(typingTimer);
+});
+
+async function doneTyping() {
+    await connection.invoke("LeaveGroup", connectionId, oldGroup).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+var canvas = document.getElementById("field");
+var ctx = canvas.getContext("2d");
+ctx.font = "30px Arial";
+var x = 0;
+var y = 0;
+var unitsRed = [];
+var unitsBlue = [];
+let user;
+let connectionId;
 
 $(document).ready(async function () {
     await WaitForConnection();
