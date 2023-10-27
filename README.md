@@ -10,6 +10,23 @@ The overall objective of this simple game is to have players think outside the b
 ![Design 2](Resources/design03.png)
 ![Design 2](Resources/design04.png)
 
+### Guidelines
+
+#### Javascript Guidelines
+We'll tag the region of javascript into a region, as "// REGION <Name>", and close it with an end region tag, as "// ENDREGION <Name>"
+
+![Javascript Organizational Guidelines](Resources/javascript01.png)
+
+This experimental pattern allows fast performance for javascript and agility for minimization.\
+The philosophy of javascript is to keep it as small as possible so most of these function,\
+ie. addEventListener, should actually be handled in the server side instead of the frontend.\
+On the contrary, if we want the operations to be handled on the frontend, the tags\
+allow scalable organization.
+
+We can allow more variations in tagging sections of a single javascript file too,\
+however, the best philosophy for javascript in my opinion is to keep it as small\
+as possible.
+
 -----
 
 [An example of an experiment from this](http://github.com/ericung/topologyoffootwork)
