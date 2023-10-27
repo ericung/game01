@@ -13,7 +13,7 @@ The overall objective of this simple game is to have players think outside the b
 ### Guidelines
 
 #### Javascript Guidelines
-We'll tag the region of javascript into a region, as "// REGION <Name>", and close it with an end region tag, as "// ENDREGION <Name>"
+We'll tag the region of javascript into a region, as "// REGION \<Name\>", and close it with an end region tag, as "// ENDREGION \<Name\>"
 
 ![Javascript Organizational Guidelines](Resources/javascript01.png)
 
