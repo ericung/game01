@@ -1,6 +1,6 @@
-﻿"use strict";
+﻿// REGION: ConnectionHub
+"use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
-
 let connected = false;
 
 connection.on("ReceiveMessage", function (user, message) {
@@ -16,16 +16,18 @@ connection.on("Connected", function (userInfo) {
     document.getElementById("user").value = user;
 });
 
-connection.on("JoinedGroup", function (userInfo) {
+connection.on("JoinedGroup", async function (userInfo) {
     document.getElementById("user").value = userInfo.userName; 
-    document.getElementById("group").value = userInfo.group; 
+    document.getElementById("group").value = userInfo.group;
+    await refreshGroups();
 });
 
 connection.on("RemovedGroup", function (userInfo) {
-    document.getElementById("group").value = userInfo.group; 
+    document.getElementById("group").value = userInfo.group;
 });
 
 connection.on("SendGroupList", function (groupList) {
+    $("#groups").empty();
     var groups = document.getElementById("groups");
     for (let i = 0; i < groupList.length; i++) {
         var newOption = document.createElement("option");
@@ -51,31 +53,25 @@ async function WaitForConnection() {
     }
 }
 
-var typingTimer;
-var doneTypingInterval = 5000;
-var input = document.getElementById("group");
-var oldGroup = input.value;
-var newGroup;
+// ENDREGION: ConnectionHub
 
-input.addEventListener('keyup', function () {
-    clearTimeout(typingTimer);
-    newGroup = input.value;
-    typingTimer = setTimeout(doneTyping, doneTypingInterval);
-});
+// REGION: InputGroup
+async function createGroup() {
+    var input = document.getElementById("group");
+    var newGroup = input.value;
 
-input.addEventListener('keydown', function () {
-    clearTimeout(typingTimer);
-});
-
-async function doneTyping() {
-    await connection.invoke("LeaveGroup", connectionId, oldGroup).catch(function (err) {
+    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
         return console.error(err.toString());
     });
-
+    https://localhost:7005/
     await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
         return console.error(err.toString());
     });
 }
+
+// ENDREGION: InputGroup
+
+// REGION: Main
 
 var canvas = document.getElementById("field");
 var ctx = canvas.getContext("2d");
@@ -138,9 +134,6 @@ canvas.addEventListener('mouseup', function (evt) {
     draw();
 }, false);
 
-function init() {
-}
-
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -184,3 +177,17 @@ async function refreshGroups() {
         return console.error(err.toString());
     });
 }
+
+async function changeGroups() {
+    let newGroup = document.getElementById("groupList").value;
+
+    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+// ENDREGION: Main

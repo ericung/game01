@@ -17,7 +17,10 @@
             <datalist id="networks"></datalist>
             <b>Group</b>
             <input id="group" name="group"/>
-            <input list="groups" id="groupList" name="groupList"/>
+            <input type="button" value="Create" onclick="createGroup()" />
+            <br />
+            <b>Group List</b>
+            <input list="groups" id="groupList" name="groupList" onchange="changeGroups()"/>
             <datalist id="groups"></datalist>
             <input type="button" value="Refresh Groups" onclick="refreshGroups()"/>
             <br />

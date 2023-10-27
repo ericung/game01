@@ -43,24 +43,28 @@ namespace Hubs
             await Clients.Client(connectionId).SendAsync("JoinedGroup", ConnectionMap[connectionId]);
         }
 
-        public async Task LeaveGroup(string connectionId, string groupName)
+        public async Task LeaveGroup(string connectionId)
         {
+            var groupName = ConnectionMap[connectionId].Group;
+
+            if ((groupName is null) || (groupName == string.Empty))
+            {
+                return;
+            }
+
             try
             {
+
                 if (GroupMap.ContainsKey(groupName))
                 {
                     await Groups.RemoveFromGroupAsync(connectionId, groupName);
                     ConnectionMap[connectionId].Group = "";
-                    GroupMap[groupName].Remove(ConnectionMap[connectionId]);
-                    List<User> output;
-                    if (GroupMap[groupName].Count == 0)
+                    foreach(User user in GroupMap[groupName])
                     {
-                        GroupMap.TryRemove(groupName, out output);
-                        foreach(User user in output)
-                        {
-                            user.Group = String.Empty;
-                        }
+                        user.Group = String.Empty;
                     }
+                    GroupMap[groupName].Remove(ConnectionMap[connectionId]);
+                    GroupMap.TryRemove(groupName, out _);
                 }
             }
             catch
@@ -73,7 +77,23 @@ namespace Hubs
 
         public async Task GetGroups(string connectionId)
         {
-            await Clients.Client(connectionId).SendAsync("SendGroupList", GroupMap.Keys);
+            List<string> keys = new List<string>(GroupMap.Keys);
+            List<string> toRemove = new List<string>();
+            for(int i = 0; i < keys.Count; i++)
+            {
+                if (GroupMap[keys[i]].Count == 0)
+                {
+                    toRemove.Add(keys[i]);
+                }
+            }
+
+            foreach(string key in toRemove)
+            {
+                GroupMap.TryRemove(key, out _);
+                keys.Remove(key);
+            }
+
+            await Clients.Client(connectionId).SendAsync("SendGroupList", keys);
         }
 
         public override Task OnConnectedAsync()
