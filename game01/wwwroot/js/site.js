@@ -39,12 +39,19 @@ connection.on("RemovedGroup", function (userInfo) {
 });
 
 connection.on("SendGroupList", function (groupList) {
-    $("#groups").empty();
-    var groups = document.getElementById("groups");
+    $("#groupList").empty();
+    var groups = document.getElementById("groupList");
+    var options = groups.options;
+    options[0] = new Option("", "");
     for (let i = 0; i < groupList.length; i++) {
+        /*
         var newOption = document.createElement("option");
+        newOption.text = groupList[i];
         newOption.value = groupList[i];
         groups.appendChild(newOption);
+        */
+
+        options[options.length] = new Option(groupList[i], groupList[i]);
     }
 });
 
@@ -73,9 +80,9 @@ async function createGroup() {
     var newGroup = input.value;
 
     await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
-
         return console.error(err.toString());
     });
+
     await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
         return console.error(err.toString());
     });
@@ -102,6 +109,7 @@ $(document).ready(async function () {
         return console.error(err.toString());
     });
     $("#network").attr("value", connectionId);
+
     draw();
 });
 
@@ -212,6 +220,7 @@ async function refreshGroups() {
 }
 
 async function changeGroups() {
+    document.getElementById("group").value = document.getElementById("groupList").value;
     let newGroup = document.getElementById("groupList").value;
 
     await connection.invoke("LeaveGroup", connectionId).catch(function (err) {

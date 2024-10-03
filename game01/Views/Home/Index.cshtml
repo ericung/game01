@@ -20,8 +20,12 @@
             <input type="button" value="Create" onclick="createGroup()" />
             <br />
             <b>Group List</b>
+            <select id="groupList" onchange="changeGroups()">
+            </select>
+            <!--
             <input list="groups" id="groupList" name="groupList" onchange="changeGroups()"/>
             <datalist id="groups"></datalist>
+            -->
             <input type="button" value="Refresh Groups" onclick="refreshGroups()"/>
             <br />
             <b>Units</b>
