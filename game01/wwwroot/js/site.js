@@ -19,11 +19,13 @@ connection.on("Connected", function (userInfo) {
 connection.on("JoinedGroup", async function (userInfo) {
     document.getElementById("user").value = userInfo.userName; 
     document.getElementById("group").value = userInfo.group;
+    user = userInfo.userName;
     await refreshGroups();
 });
 
 connection.on("RemovedGroup", function (userInfo) {
     document.getElementById("group").value = userInfo.group;
+    user = userInfo.userName;
 });
 
 connection.on("SendGroupList", function (groupList) {
@@ -128,6 +130,15 @@ canvas.addEventListener('mouseup', function (evt) {
         unitsRed.push({ x: xPos, y: yPos, id: unitsRed.length });
     }
 
+    if ((user=="blue")&&(y >= 400 + 20)&&(pushUnit)&&(unitsBlue.length < units)) {
+        connection.invoke("SendMessage", "blue", {x: xPos, y: yPos}).catch(function (err) {
+            return console.error(err.toString());
+        });
+        evt.preventDefault();
+
+        unitsBlue.push({ x: xPos, y: yPos, id: unitsBlue.length });
+    }
+
     x = mousePos.x;
     y = mousePos.y;
 
@@ -162,6 +173,10 @@ function draw() {
         ctx.fill();
         ctx.stroke();
     }
+    ctx.font = "24px serif";
+    var str = x + ": " + y;
+    ctx.strokeText(x + ": " + y, 50, 50);
+
 }
 
 function getMousePos(canvas, evt) {
