@@ -123,9 +123,9 @@ namespace Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("Connected", ConnectionMap[Context.ConnectionId]);
         }
 
-        public async Task SendMessage(string user,  Unit message)
+        public async Task SendMessage(string user,  Object message)
         {
-            await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", user, message);
+            await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
     }
 }

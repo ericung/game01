@@ -4,12 +4,22 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build
 let connected = false;
 
 connection.on("ReceiveMessage", function (user, message) {
+    if (message.Message.Blue !== undefined) {
+        unitsBlue = message.Message.Blue;
+    }
+
+    if (message.Message.Red !== undefined) {
+        unitsRed = message.Message.Red;
+    }
+
+    draw();
 });
 
 connection.on("Connected", function (userInfo) {
     connectionId = userInfo.connectionId;
     var datalist = document.getElementById("networks");
     var newOption = document.createElement("option");
+
     newOption.value = connectionId;
     datalist.appendChild(newOption);
     user = userInfo.userName;
@@ -63,9 +73,9 @@ async function createGroup() {
     var newGroup = input.value;
 
     await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
+
         return console.error(err.toString());
     });
-    https://localhost:7005/
     await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
         return console.error(err.toString());
     });
@@ -114,31 +124,41 @@ canvas.addEventListener('mouseup', function (evt) {
     var units = document.getElementById("units").value;
 
     for (let i = 0; i < unitsRed.length; i++) {
-        var distance = Math.pow(unitsRed[i].x - x, 2) + Math.pow(unitsRed[i].y - y, 2);
+        var distance = Math.pow(unitsRed[i].Message.Unit.x - x, 2) + Math.pow(unitsRed[i].Message.Unit.y - y, 2);
+        
+        if (distance <= radius) {
+            pushUnit = false;
+        }
+    }
+
+    for (let i = 0; i < unitsBlue.length; i++) {
+        var distance = Math.pow(unitsBlue[i].Message.Unit.x - x, 2) + Math.pow(unitsBlue[i].Message.Unit.y - y, 2);
         
         if (distance <= radius) {
             pushUnit = false;
         }
     }
     
-    if ((user=="red")&&(y <= 400 - 20)&&(pushUnit)&&(unitsRed.length < units)) {
-        connection.invoke("SendMessage", "red", {x: xPos, y: yPos}).catch(function (err) {
-            return console.error(err.toString());
-        });
-        evt.preventDefault();
+    if ((user == "red") && (y <= 400 - 20) && (pushUnit) && (unitsRed.length < units))
+    {
+        unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, id: unitsRed.length } } });
 
-        unitsRed.push({ x: xPos, y: yPos, id: unitsRed.length });
+        evt.preventDefault();
     }
 
-    if ((user=="blue")&&(y >= 400 + 20)&&(pushUnit)&&(unitsBlue.length < units)) {
-        connection.invoke("SendMessage", "blue", {x: xPos, y: yPos}).catch(function (err) {
-            return console.error(err.toString());
-        });
+    if ((user == "blue") && (y >= 400 + 20) && (pushUnit) && (unitsBlue.length < units))
+    {
+        unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, id: unitsBlue.length } } });
+
         evt.preventDefault();
-
-        unitsBlue.push({ x: xPos, y: yPos, id: unitsBlue.length });
     }
-
+    connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
+        return console.error(err.toString());
+    });
+    connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
+        return console.error(err.toString());
+    });
+    
     x = mousePos.x;
     y = mousePos.y;
 
@@ -161,7 +181,7 @@ function draw() {
     ctx.fillStyle = "#ffe6e6";
     for (var i = 0; i < unitsRed.length; i++) {
         ctx.beginPath();
-        ctx.arc(unitsRed[i].x, unitsRed[i].y, 20, 0, 2 * Math.PI);
+        ctx.arc(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.y, 20, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
     }
@@ -169,14 +189,12 @@ function draw() {
     ctx.fillStyle = "#e6e6ff";
     for (var i = 0; i < unitsBlue.length; i++) {
         ctx.beginPath();
-        ctx.arc(unitsBlue[i].x, unitsBlue[i].y, 20, 0, 2 * Math.PI);
+        ctx.arc(unitsBlue[i].Message.Unit.x, unitsBlue[i].Message.Unit.y, 20, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
     }
     ctx.font = "24px serif";
-    var str = x + ": " + y;
     ctx.strokeText(x + ": " + y, 50, 50);
-
 }
 
 function getMousePos(canvas, evt) {
