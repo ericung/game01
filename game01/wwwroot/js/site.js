@@ -44,13 +44,6 @@ connection.on("SendGroupList", function (groupList) {
     var options = groups.options;
     options[0] = new Option("", "");
     for (let i = 0; i < groupList.length; i++) {
-        /*
-        var newOption = document.createElement("option");
-        newOption.text = groupList[i];
-        newOption.value = groupList[i];
-        groups.appendChild(newOption);
-        */
-
         options[options.length] = new Option(groupList[i], groupList[i]);
     }
 });
@@ -74,7 +67,8 @@ async function WaitForConnection() {
 
 // ENDREGION: ConnectionHub
 
-// REGION: InputGroup
+// REGION: GroupActions
+
 async function createGroup() {
     var input = document.getElementById("group");
     var newGroup = input.value;
@@ -88,7 +82,26 @@ async function createGroup() {
     });
 }
 
-// ENDREGION: InputGroup
+async function refreshGroups() {
+    await connection.invoke("GetGroups", connectionId).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+async function changeGroups() {
+    document.getElementById("group").value = document.getElementById("groupList").value;
+    let newGroup = document.getElementById("groupList").value;
+
+    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+
+// ENDREGION: GroupActions
 
 // REGION: Main
 
@@ -201,6 +214,8 @@ function draw() {
         ctx.fill();
         ctx.stroke();
     }
+
+    // debug purposes only
     ctx.font = "24px serif";
     ctx.strokeText(x + ": " + y, 50, 50);
 }
@@ -211,25 +226,6 @@ function getMousePos(canvas, evt) {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
     };
-}
-
-async function refreshGroups() {
-    await connection.invoke("GetGroups", connectionId).catch(function (err) {
-        return console.error(err.toString());
-    });
-}
-
-async function changeGroups() {
-    document.getElementById("group").value = document.getElementById("groupList").value;
-    let newGroup = document.getElementById("groupList").value;
-
-    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
-        return console.error(err.toString());
-    });
 }
 
 // ENDREGION: Main
