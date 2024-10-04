@@ -2,6 +2,16 @@
 "use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 let connected = false;
+var canvas = document.getElementById("field");
+var ctx = canvas.getContext("2d");
+ctx.font = "30px Arial";
+var x = 0;
+var y = 0;
+var unitsRed = [];
+var unitsBlue = [];
+let user;
+let connectionId;
+var selected = -1;
 
 connection.on("ReceiveMessage", function (user, message) {
     if (message.Message.Blue !== undefined) {
@@ -107,15 +117,6 @@ async function changeGroups() {
 
 // REGION: Main
 
-var canvas = document.getElementById("field");
-var ctx = canvas.getContext("2d");
-ctx.font = "30px Arial";
-var x = 0;
-var y = 0;
-var unitsRed = [];
-var unitsBlue = [];
-let user;
-let connectionId;
 
 $(document).ready(async function () {
     await WaitForConnection();
@@ -175,6 +176,7 @@ canvas.addEventListener('mouseup', function (evt) {
 
         evt.preventDefault();
     }
+
     connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
         return console.error(err.toString());
     });
@@ -202,16 +204,26 @@ function draw() {
 
     ctx.strokeStyle = "black";
     ctx.setLineDash([]);
-    ctx.fillStyle = "#ffe6e6";
     for (var i = 0; i < unitsRed.length; i++) {
+        if (selected == i) {
+            ctx.fillStyle = "#000000";
+        }
+        else {
+            ctx.fillStyle = "#ffe6e6";
+        }
         ctx.beginPath();
         ctx.arc(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.y, 20, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
     }
 
-    ctx.fillStyle = "#e6e6ff";
     for (var i = 0; i < unitsBlue.length; i++) {
+        if (selected == i) {
+            ctx.fillStyle = "#000000";
+        }
+        else {
+            ctx.fillStyle = "#e6e6ff";
+        }
         ctx.beginPath();
         ctx.arc(unitsBlue[i].Message.Unit.x, unitsBlue[i].Message.Unit.y, 20, 0, 2 * Math.PI);
         ctx.fill();
@@ -225,6 +237,21 @@ function draw() {
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
+    var x = evt.clientX - rect.left;
+    var y = evt.clientY - rect.top;
+
+    for (var i = 0; i < unitsRed.length; i++) {
+        if (distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y) < 20) {
+            selected = i;
+        }
+    }
+
+    for (var i = 0; i < unitsBlue.length; i++) {
+        if (distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y) < 20) {
+            selected = i;
+        }
+    }
+
     return {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
@@ -232,3 +259,12 @@ function getMousePos(canvas, evt) {
 }
 
 // ENDREGION: Main
+
+// REGION: Helper
+
+function distance(x1, x2, y1, y2) {
+    return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2));
+}
+
+// ENDREGION: Helper
+
