@@ -34,3 +34,5 @@ as possible.
 -----
 
 [An example of an experiment from this](http://github.com/ericung/topologyoffootwork)
+
+[Canvas Refresh in Javascript](https://stackoverflow.com/questions/64341953/how-do-you-force-a-canvas-refresh-in-javascript)

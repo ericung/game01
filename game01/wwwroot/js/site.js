@@ -126,7 +126,10 @@ $(document).ready(async function () {
 
     $("#network").attr("value", connectionId);
 
-    draw();
+    setInterval(() => {
+        updateObjects();
+        draw();
+    }, 1000 / 60);
 });
 
 document.getElementById("network").addEventListener("change", function (evt) {
@@ -161,6 +164,14 @@ canvas.addEventListener('mouseup', function (evt) {
                 }
             }
         }
+        else {
+            if (user == "red") {
+                if (selected == i) {
+                    unitsRed[i].Message.Unit.destX = x;
+                    unitsRed[i].Message.Unit.destY = y;
+                }
+            }
+        }
     }
 
     for (let i = 0; i < unitsBlue.length; i++) {
@@ -177,27 +188,35 @@ canvas.addEventListener('mouseup', function (evt) {
                 }
             }
         }
+        else {
+            if (user == "blue") {
+                if (selected == i) {
+                    unitsBlue[i].Message.Unit.destX = x;
+                    unitsBlue[i].Message.Unit.destY = y;
+                }
+            }
+        }
     }
     
     if ((user == "red") && (y <= 400 - 20) && (pushUnit) && (unitsRed.length < units))
     {
-        unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, id: unitsRed.length } } });
+        unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsRed.length } } });
 
         evt.preventDefault();
     }
 
     if ((user == "blue") && (y >= 400 + 20) && (pushUnit) && (unitsBlue.length < units))
     {
-        unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, id: unitsBlue.length } } });
+        unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsBlue.length } } });
 
         evt.preventDefault();
     }
 
-    connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
+    connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
         return console.error(err.toString());
     });
 
-    connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
+    connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
         return console.error(err.toString());
     });
     
@@ -227,6 +246,7 @@ function draw() {
         else {
             ctx.fillStyle = "#ffe6e6";
         }
+
         ctx.beginPath();
         ctx.arc(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.y, 20, 0, 2 * Math.PI);
         ctx.fill();
@@ -240,6 +260,7 @@ function draw() {
         else {
             ctx.fillStyle = "#e6e6ff";
         }
+
         ctx.beginPath();
         ctx.arc(unitsBlue[i].Message.Unit.x, unitsBlue[i].Message.Unit.y, 20, 0, 2 * Math.PI);
         ctx.fill();
@@ -251,6 +272,37 @@ function draw() {
     ctx.strokeText(x + ": " + y, 50, 50);
 }
 
+function updateObjects() {
+    for (var i = 0; i < unitsRed.length; i++) {
+        var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
+
+        if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.5) {
+            unitsRed[i].Message.Unit.x += Math.cos(angle * 180 / Math.PI);
+        }
+
+        if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.5) {
+            unitsRed[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
+        }
+    }
+
+    for (var i = 0; i < unitsBlue.length; i++) {
+        var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x- unitsBlue[i].Message.Unit.destX);
+
+        if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.5) {
+            unitsBlue[i].Message.Unit.x += Math.cos(angle * 180 / Math.PI);
+        }
+
+        if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.5) {
+            unitsBlue[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
+        }
+    }
+
+}
+
+// ENDREGION: Main
+
+// REGION: Helper
+
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
 
@@ -259,10 +311,6 @@ function getMousePos(canvas, evt) {
         y: evt.clientY - rect.top
     };
 }
-
-// ENDREGION: Main
-
-// REGION: Helper
 
 function distance(x1, x2, y1, y2) {
     return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2));
