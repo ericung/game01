@@ -69,6 +69,8 @@ async function WaitForConnection() {
 
 // REGION: GroupActions
 
+// Group Actions - Create, Refresh, and Change
+
 async function createGroup() {
     var input = document.getElementById("group");
     var newGroup = input.value;
@@ -176,6 +178,7 @@ canvas.addEventListener('mouseup', function (evt) {
     connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
         return console.error(err.toString());
     });
+
     connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
         return console.error(err.toString());
     });

@@ -27,6 +27,10 @@ We can allow more variations in tagging sections of a single javascript file too
 however, the best philosophy for javascript in my opinion is to keep it as small\
 as possible.
 
+### Current Design
+
+![Current Design](Resources/currentDesign.png)
+
 -----
 
 [An example of an experiment from this](http://github.com/ericung/topologyoffootwork)

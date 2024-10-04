@@ -12,9 +12,11 @@
         <form>
             <b>User</b>
             <input id="user" value="@Model.User" disabled/>
+            <br/>
             <b>Network</b>
             <input list="networks" id="network" name="network"/>
             <datalist id="networks"></datalist>
+            <br/>
             <b>Group</b>
             <input id="group" name="group"/>
             <input type="button" value="Create" onclick="createGroup()" />
@@ -22,6 +24,7 @@
             <b>Group List</b>
             <select id="groupList" onchange="changeGroups()">
             </select>
+            <br />
             <!--
             <input list="groups" id="groupList" name="groupList" onchange="changeGroups()"/>
             <datalist id="groups"></datalist>
