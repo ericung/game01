@@ -205,7 +205,7 @@ function draw() {
     ctx.strokeStyle = "black";
     ctx.setLineDash([]);
     for (var i = 0; i < unitsRed.length; i++) {
-        if (selected == i) {
+        if ((user == "red")&&(selected == i)) {
             ctx.fillStyle = "#000000";
         }
         else {
@@ -218,7 +218,7 @@ function draw() {
     }
 
     for (var i = 0; i < unitsBlue.length; i++) {
-        if (selected == i) {
+        if ((user == "blue")&&(selected == i)) {
             ctx.fillStyle = "#000000";
         }
         else {
@@ -240,15 +240,19 @@ function getMousePos(canvas, evt) {
     var x = evt.clientX - rect.left;
     var y = evt.clientY - rect.top;
 
-    for (var i = 0; i < unitsRed.length; i++) {
-        if (distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y) < 20) {
-            selected = i;
+    if (user == "red") {
+        for (var i = 0; i < unitsRed.length; i++) {
+            if (distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y) < 20) {
+                selected = i;
+            }
         }
     }
 
-    for (var i = 0; i < unitsBlue.length; i++) {
-        if (distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y) < 20) {
-            selected = i;
+    if (user == "blue") {
+        for (var i = 0; i < unitsBlue.length; i++) {
+            if (distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y) < 20) {
+                selected = i;
+            }
         }
     }
 
