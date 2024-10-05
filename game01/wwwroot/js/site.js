@@ -274,14 +274,55 @@ function draw() {
 
 function updateObjects() {
     for (var i = 0; i < unitsRed.length; i++) {
-        var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
+        var speed = 1;
+        if (distance(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.y, unitsRed[i].Message.Unit.destY) > 0.75) {
+            for (var j = 0; j < unitsRed.length; j++) {
+                if ((i !== j) && (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 40) {
+                    speed = -1;
+                    var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
 
-        if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.5) {
-            unitsRed[i].Message.Unit.x += Math.cos(angle * 180 / Math.PI);
+                    if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.75) {
+                        unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
+                    }
+
+                    if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.75) {
+                        unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+                    }
+
+                    speed = 0;
+                    j = unitsRed.length;
+                }
+            }
+
+            for (var j = 0; j < unitsBlue.length; j++) {
+                if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
+                    speed = -1;
+                    var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x- unitsBlue[i].Message.Unit.destX);
+
+                    if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.75) {
+                        unitsBlue[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
+                    }
+
+                    if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.75) {
+                        unitsBlue[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+                    }
+
+                    speed = 0;
+                    j = unitsBlue.length;
+                }
+            }
         }
 
-        if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.5) {
-            unitsRed[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
+        if (speed !== 0) {
+            var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
+
+            if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.75) {
+                unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
+            }
+
+            if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.75) {
+                unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+            }
         }
     }
 
@@ -296,7 +337,6 @@ function updateObjects() {
             unitsBlue[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
         }
     }
-
 }
 
 // ENDREGION: Main
