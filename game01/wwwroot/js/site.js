@@ -16,7 +16,7 @@ var ballx = 700;
 var bally = 400;
 var balldestx = 700;
 var balldesty = 400;
-var hasball = -1;
+var hasball = { user: "none", player: -1 };
 
 connection.on("ReceiveMessage", function (user, message) {
     if (message.Message.Blue !== undefined) {
@@ -146,27 +146,6 @@ canvas.addEventListener('mousedown', function (evt) {
     var mousePos = getMousePos(canvas, evt);
     x = mousePos.x;
     y = mousePos.y;
-
-    if (evt.button == 2) {
-        if (user == "red") {
-            for (var i = 0; i < unitsRed.length; i++) {
-                if (hasball === i) {
-                    hasball = -1;
-                    balldestx = x;
-                    balldesty = y;
-                }
-            }
-        }
-
-        if (user == "blue") {
-            for (var i = 0; i < unitsBlue.length; i++) {
-                if (hasball === i) {
-                    balldestx = x;
-                    balldesty = y;
-                }
-            }
-        }
-    }
 }, false);
 
 canvas.addEventListener('mouseup', function (evt) {
@@ -239,6 +218,32 @@ canvas.addEventListener('mouseup', function (evt) {
         evt.preventDefault();
     }
 
+    if (evt.button == 2) {
+        if (user == "red") {
+            for (var i = 0; i < unitsRed.length; i++) {
+                if (hasball.player === i) {
+                    hasball.player = -1;
+                    balldestx = xPos;
+                    balldesty = yPos;
+                    var angle = Math.atan2(balldesty - bally, balldestx -ballx);
+                    ballx += 80 * Math.cos(angle * 180 / Math.PI);
+                    bally += 80 * Math.sin(angle * 180 / Math.PI);
+                }
+            }
+        }
+
+        if (user == "blue") {
+            for (var i = 0; i < unitsBlue.length; i++) {
+                if (hasball.player === i) {
+                    balldestx = xPos;
+                    balldesty = yPos;
+                    var angle = Math.atan2(balldesty - bally, balldestx - ballx);
+                    ballx += 80 * Math.cos(angle * 180 / Math.PI);
+                    bally += 80 * Math.sin(angle * 180 / Math.PI);
+                }
+            }
+        }
+    }
     connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue } }).catch(function (err) {
         return console.error(err.toString());
     });
@@ -298,7 +303,7 @@ function draw() {
         ctx.stroke();
     }
 
-    if ((hasball === -1)||(balldestx !== ballx)||(balldesty !== bally)) {
+    if ((hasball.player === -1)||(balldestx !== ballx)||(balldesty !== bally)) {
         ctx.fillStyle = "#ffa500";
         ctx.beginPath();
         ctx.arc(ballx, bally, 20, 0, 2 * Math.PI);
@@ -367,7 +372,8 @@ function updateObjects() {
         }
 
         if ((distance(unitsRed[i].Message.Unit.x, ballx, unitsRed[i].Message.Unit.y, bally)) < 40) {
-            hasball = i;
+            hasball.user = "red";
+            hasball.player = i;
         }
     }
 
@@ -424,14 +430,16 @@ function updateObjects() {
         }
 
         if ((distance(unitsBlue[i].Message.Unit.x, ballx, unitsBlue[i].Message.Unit.y, bally)) < 40) {
-            hasball = i;
+            hasball.user = "blue";
+            hasball.player = i;
         }
     }
 
+    // snapping effect
     if (distance(ballx, balldestx, bally, balldesty) > 10) {
         var angle = Math.atan2(bally - balldesty, ballx - balldestx);
-        ballx += 10 * Math.cos(angle * 180 / Math.PI);
-        bally += 10 * Math.sin(angle * 180 / Math.PI);
+        ballx += 1 * Math.cos(angle * 180 / Math.PI);
+        bally += 1 * Math.sin(angle * 180 / Math.PI);
     }
     else {
         ballx = balldestx;
