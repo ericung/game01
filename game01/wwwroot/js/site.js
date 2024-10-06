@@ -12,6 +12,11 @@ var unitsBlue = [];
 let user;
 let connectionId;
 var selected = -1;
+var ballx = 700;
+var bally = 400;
+var balldestx = 700;
+var balldesty = 400;
+var hasball = -1;
 
 connection.on("ReceiveMessage", function (user, message) {
     if (message.Message.Blue !== undefined) {
@@ -79,8 +84,6 @@ async function WaitForConnection() {
 
 // REGION: GroupActions
 
-// Group Actions - Create, Refresh, and Change
-
 async function createGroup() {
     var input = document.getElementById("group");
     var newGroup = input.value;
@@ -132,6 +135,9 @@ $(document).ready(async function () {
     }, 1000 / 60);
 });
 
+// ENDREGION: Main
+
+// REGION: Event Listener
 document.getElementById("network").addEventListener("change", function (evt) {
     connectionId = evt.value;
 });
@@ -140,6 +146,27 @@ canvas.addEventListener('mousedown', function (evt) {
     var mousePos = getMousePos(canvas, evt);
     x = mousePos.x;
     y = mousePos.y;
+
+    if (evt.button == 2) {
+        if (user == "red") {
+            for (var i = 0; i < unitsRed.length; i++) {
+                if (hasball === i) {
+                    hasball = -1;
+                    balldestx = x;
+                    balldesty = y;
+                }
+            }
+        }
+
+        if (user == "blue") {
+            for (var i = 0; i < unitsBlue.length; i++) {
+                if (hasball === i) {
+                    balldestx = x;
+                    balldesty = y;
+                }
+            }
+        }
+    }
 }, false);
 
 canvas.addEventListener('mouseup', function (evt) {
@@ -226,6 +253,10 @@ canvas.addEventListener('mouseup', function (evt) {
     draw();
 }, false);
 
+
+
+// ENDREGION: eventListener
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -267,9 +298,19 @@ function draw() {
         ctx.stroke();
     }
 
+    if ((hasball === -1)||(balldestx !== ballx)||(balldesty !== bally)) {
+        ctx.fillStyle = "#ffa500";
+        ctx.beginPath();
+        ctx.arc(ballx, bally, 20, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+    }
+
     // debug purposes only
     ctx.font = "24px serif";
     ctx.strokeText(x + ": " + y, 50, 50);
+    ctx.strokeText(ballx + ": " + bally, 50, 75);
+    ctx.strokeText(balldestx + ": " + balldesty, 50, 100);
 }
 
 function updateObjects() {
@@ -295,16 +336,16 @@ function updateObjects() {
             }
 
             for (var j = 0; j < unitsBlue.length; j++) {
-                if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
+                if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
                     speed = -1;
-                    var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x- unitsBlue[i].Message.Unit.destX);
+                    var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
 
-                    if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.75) {
-                        unitsBlue[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
+                    if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.75) {
+                        unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
                     }
 
-                    if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.75) {
-                        unitsBlue[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+                    if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.75) {
+                        unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
                     }
 
                     speed = 0;
@@ -324,18 +365,77 @@ function updateObjects() {
                 unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
             }
         }
+
+        if ((distance(unitsRed[i].Message.Unit.x, ballx, unitsRed[i].Message.Unit.y, bally)) < 40) {
+            hasball = i;
+        }
     }
 
     for (var i = 0; i < unitsBlue.length; i++) {
-        var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x- unitsBlue[i].Message.Unit.destX);
+        var speed = 1;
+        if (distance(unitsBlue[i].Message.Unit.x, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.y, unitsBlue[i].Message.Unit.destY) > 0.75) {
+            for (var j = 0; j < unitsRed.length; j++) {
+                if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 40) {
+                    speed = -1;
+                    var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x - unitsBlue[i].Message.Unit.destX);
 
-        if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.5) {
-            unitsBlue[i].Message.Unit.x += Math.cos(angle * 180 / Math.PI);
+                    if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.75) {
+                        unitsBlue[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
+                    }
+
+                    if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.75) {
+                        unitsBlue[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+                    }
+
+                    speed = 0;
+                    j = unitsRed.length;
+                }
+            }
+
+            for (var j = 0; j < unitsBlue.length; j++) {
+                if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
+                    speed = -1;
+                    var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x - unitsBlue[i].Message.Unit.destX);
+
+                    if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.75) {
+                        unitsBlue[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
+                    }
+
+                    if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.75) {
+                        unitsBlue[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+                    }
+
+                    speed = 0;
+                    j = unitsBlue.length;
+                }
+            }
         }
 
-        if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.5) {
-            unitsBlue[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
+        if (speed !== 0) {
+            var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x - unitsBlue[i].Message.Unit.destX);
+
+            if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.5) {
+                unitsBlue[i].Message.Unit.x += Math.cos(angle * 180 / Math.PI);
+            }
+
+            if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.5) {
+                unitsBlue[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
+            }
         }
+
+        if ((distance(unitsBlue[i].Message.Unit.x, ballx, unitsBlue[i].Message.Unit.y, bally)) < 40) {
+            hasball = i;
+        }
+    }
+
+    if (distance(ballx, balldestx, bally, balldesty) > 10) {
+        var angle = Math.atan2(bally - balldesty, ballx - balldestx);
+        ballx += 10 * Math.cos(angle * 180 / Math.PI);
+        bally += 10 * Math.sin(angle * 180 / Math.PI);
+    }
+    else {
+        ballx = balldestx;
+        bally = balldesty;
     }
 }
 
