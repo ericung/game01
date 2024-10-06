@@ -157,9 +157,7 @@ canvas.addEventListener('mouseup', function (evt) {
     var units = document.getElementById("units").value;
 
     for (let i = 0; i < unitsRed.length; i++) {
-        var distanceRed = distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y);
-        
-        if (distanceRed < 20) {
+        if (distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y) < 20) {
             pushUnit = false;
 
             if (user == "red") {
@@ -172,7 +170,7 @@ canvas.addEventListener('mouseup', function (evt) {
         }
         else {
             if (user == "red") {
-                if (selected == i) {
+                if ((selected == i)&&(evt.button == 0)) {
                     unitsRed[i].Message.Unit.destX = x;
                     unitsRed[i].Message.Unit.destY = y;
                 }
@@ -181,9 +179,7 @@ canvas.addEventListener('mouseup', function (evt) {
     }
 
     for (let i = 0; i < unitsBlue.length; i++) {
-        var distanceBlue = distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y);
-        
-        if (distanceBlue < 20) {
+        if (distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y) < 20) {
             pushUnit = false;
 
             if (user == "blue") {
@@ -196,7 +192,7 @@ canvas.addEventListener('mouseup', function (evt) {
         }
         else {
             if (user == "blue") {
-                if (selected == i) {
+                if ((selected == i)&&(evt.button == 0)) {
                     unitsBlue[i].Message.Unit.destX = x;
                     unitsBlue[i].Message.Unit.destY = y;
                 }
@@ -221,25 +217,26 @@ canvas.addEventListener('mouseup', function (evt) {
     if (evt.button == 2) {
         if (user == "red") {
             for (var i = 0; i < unitsRed.length; i++) {
-                if (hasball.player === i) {
+                if ((hasball.player === i)&&(distance(unitsRed[i].Message.Unit.x,xPos,unitsRed[i].Message.Unit.y,yPos) > 5)) {
                     hasball.player = -1;
                     balldestx = xPos;
                     balldesty = yPos;
-                    var angle = Math.atan2(balldesty - bally, balldestx -ballx);
-                    ballx += 80 * Math.cos(angle * 180 / Math.PI);
-                    bally += 80 * Math.sin(angle * 180 / Math.PI);
+                    var angle = Math.atan2(balldesty - bally, balldestx - ballx);
+                    ballx = unitsRed[i].Message.Unit.x + 50 * Math.cos(angle * 180 / Math.PI);
+                    bally = unitsRed[i].Message.Unit.y + 50 * Math.sin(angle * 180 / Math.PI);
                 }
             }
         }
 
         if (user == "blue") {
             for (var i = 0; i < unitsBlue.length; i++) {
-                if (hasball.player === i) {
+                if ((hasball.player === i)&&(distance(unitsBlue[i].Message.Unit.x,xPos,unitsBlue[i].Message.Unit.y,yPos) > 5)) {
+                    hasball.player = -1;
                     balldestx = xPos;
                     balldesty = yPos;
                     var angle = Math.atan2(balldesty - bally, balldestx - ballx);
-                    ballx += 80 * Math.cos(angle * 180 / Math.PI);
-                    bally += 80 * Math.sin(angle * 180 / Math.PI);
+                    ballx = unitsBlue[i].Message.Unit.x + 50 * Math.cos(angle * 180 / Math.PI);
+                    bally = unitsBlue[i].Message.Unit.y + 50 * Math.sin(angle * 180 / Math.PI);
                 }
             }
         }
@@ -319,6 +316,21 @@ function draw() {
 }
 
 function updateObjects() {
+    // snapping effect
+    if (distance(ballx, balldestx, bally, balldesty) > 5) {
+        hasball.player = -1;
+        hasball.user = "none";
+        var angle = Math.atan2(balldesty - bally, balldestx - ballx);
+        var prevballx = ballx;
+        var prevbally = bally;
+        ballx += 5 * Math.cos(angle * 180 / Math.PI);
+        bally += 5 * Math.sin(angle * 180 / Math.PI);
+    }
+    else {
+        ballx = balldestx;
+        bally = balldesty;
+    }
+
     for (var i = 0; i < unitsRed.length; i++) {
         var speed = 1;
         if (distance(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.y, unitsRed[i].Message.Unit.destY) > 0.75) {
@@ -433,17 +445,6 @@ function updateObjects() {
             hasball.user = "blue";
             hasball.player = i;
         }
-    }
-
-    // snapping effect
-    if (distance(ballx, balldestx, bally, balldesty) > 10) {
-        var angle = Math.atan2(bally - balldesty, ballx - balldestx);
-        ballx += 1 * Math.cos(angle * 180 / Math.PI);
-        bally += 1 * Math.sin(angle * 180 / Math.PI);
-    }
-    else {
-        ballx = balldestx;
-        bally = balldesty;
     }
 }
 
