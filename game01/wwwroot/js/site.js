@@ -321,8 +321,6 @@ function updateObjects() {
         hasball.player = -1;
         hasball.user = "none";
         var angle = Math.atan2(balldesty - bally, balldestx - ballx);
-        var prevballx = ballx;
-        var prevbally = bally;
         ballx += 5 * Math.cos(angle * 180 / Math.PI);
         bally += 5 * Math.sin(angle * 180 / Math.PI);
     }
@@ -333,17 +331,17 @@ function updateObjects() {
 
     for (var i = 0; i < unitsRed.length; i++) {
         var speed = 1;
-        if (distance(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.y, unitsRed[i].Message.Unit.destY) > 0.75) {
+        if (distance(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.y, unitsRed[i].Message.Unit.destY) > 1) {
             for (var j = 0; j < unitsRed.length; j++) {
                 if ((i !== j) && (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 40) {
                     speed = -1;
                     var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
 
-                    if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.75) {
+                    if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 1) {
                         unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
                     }
 
-                    if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.75) {
+                    if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 1) {
                         unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
                     }
 
@@ -462,7 +460,7 @@ function getMousePos(canvas, evt) {
 }
 
 function distance(x1, x2, y1, y2) {
-    return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2));
+    return Math.abs(Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2)));
 }
 
 // ENDREGION: Helper
