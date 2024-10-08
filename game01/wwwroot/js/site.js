@@ -12,7 +12,7 @@ var unitsBlue = [];
 let user;
 let connectionId;
 var selected = -1;
-var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1 };
+var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, speed: 5 };
 
 connection.on("ReceiveMessage", function (user, message) {
     if (message.Message.Blue !== undefined) {
@@ -219,26 +219,22 @@ canvas.addEventListener('mouseup', function (evt) {
     if (evt.button == 2) {
         if (user == "red") {
             for (var i = 0; i < unitsRed.length; i++) {
-                if ((ball.player === i)&&(distance(unitsRed[i].Message.Unit.x,xPos,unitsRed[i].Message.Unit.y,yPos) > 5)) {
+                if ((ball.player === i)&&(distance(unitsRed[i].Message.Unit.x,xPos,unitsRed[i].Message.Unit.y,yPos) > ball.speed)) {
                     ball.player = -1;
                     ball.destX = xPos;
                     ball.destY = yPos;
-                    var angle = Math.atan2(ball.destY - ball.y, ball.destX - ball.x);
-                    ball.x = unitsRed[i].Message.Unit.x + 50 * Math.cos(angle * 180 / Math.PI);
-                    ball.y = unitsRed[i].Message.Unit.y + 50 * Math.sin(angle * 180 / Math.PI);
+                    moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed+40);
                 }
             }
         }
 
         if (user == "blue") {
             for (var i = 0; i < unitsBlue.length; i++) {
-                if ((ball.player === i)&&(distance(unitsBlue[i].Message.Unit.x,xPos,unitsBlue[i].Message.Unit.y,yPos) > 5)) {
+                if ((ball.player === i)&&(distance(unitsBlue[i].Message.Unit.x,xPos,unitsBlue[i].Message.Unit.y,yPos) > ball.speed)) {
                     ball.player = -1;
                     ball.destX = xPos;
                     ball.destY = yPos;
-                    var angle = Math.atan2(ball.destY - ball.y, ball.destX - ball.x);
-                    ball.x = unitsBlue[i].Message.Unit.x + 50 * Math.cos(angle * 180 / Math.PI);
-                    ball.y = unitsBlue[i].Message.Unit.y + 50 * Math.sin(angle * 180 / Math.PI);
+                    moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed+40);
                 }
             }
         }
@@ -319,16 +315,24 @@ function draw() {
 
 function updateObjects() {
     // snapping effect
-    if (distance(ball.x, ball.destX, ball.y, ball.destY) > 5) {
+    if (distance(ball.x, ball.destX, ball.y, ball.destY) > ball.speed) {
         ball.player = -1;
         ball.user = "none";
-        var angle = Math.atan2(ball.destY - ball.y, ball.destX - ball.x);
-        ball.x += 5 * Math.cos(angle * 180 / Math.PI);
-        ball.y += 5 * Math.sin(angle * 180 / Math.PI);
-    }
-    else {
-        ball.x = ball.destX;
-        ball.y = ball.destY;
+        moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed);
+    } else {
+        if (ball.player !== -1) {
+            if (ball.user === "red") {
+                ball.x = unitsRed[ball.player].Message.Unit.x;
+                ball.y = unitsRed[ball.player].Message.Unit.y;
+                ball.destX = unitsRed[ball.player].Message.Unit.x;
+                ball.destY = unitsRed[ball.player].Message.Unit.y;
+            } else if (ball.user === "blue") {
+                ball.destX = unitsBlue[ball.player].Message.Unit.destX;
+                ball.destY = unitsBlue[ball.player].Message.Unit.destY;
+                ball.destX = unitsBlue[ball.player].Message.Unit.x;
+                ball.destY = unitsBlue[ball.player].Message.Unit.y;
+            }
+        }
     }
 
     for (var i = 0; i < unitsRed.length; i++) {
