@@ -23,6 +23,10 @@ connection.on("ReceiveMessage", function (user, message) {
         unitsRed = message.Message.Red;
     }
 
+    if (message.Message.Ball !== undefined) {
+        ball = message.Message.Ball;
+    }
+
     draw();
 });
 
@@ -298,7 +302,7 @@ function draw() {
         ctx.stroke();
     }
 
-    if ((ball.player === -1)||(ball.destX !== ball.x)||(ball.destY !== ball.y)) {
+    if (ball.player === -1) {
         ctx.fillStyle = "#ffa500";
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, 20, 0, 2 * Math.PI);
@@ -314,12 +318,10 @@ function draw() {
 }
 
 function updateObjects() {
-    // snapping effect
     if (distance(ball.x, ball.destX, ball.y, ball.destY) > ball.speed) {
-        ball.player = -1;
-        ball.user = "none";
         moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed);
     } else {
+        // snapping effect
         if (ball.player !== -1) {
             if (ball.user === "red") {
                 ball.x = unitsRed[ball.player].Message.Unit.x;
@@ -327,8 +329,8 @@ function updateObjects() {
                 ball.destX = unitsRed[ball.player].Message.Unit.x;
                 ball.destY = unitsRed[ball.player].Message.Unit.y;
             } else if (ball.user === "blue") {
-                ball.destX = unitsBlue[ball.player].Message.Unit.destX;
-                ball.destY = unitsBlue[ball.player].Message.Unit.destY;
+                ball.x = unitsBlue[ball.player].Message.Unit.destX;
+                ball.y = unitsBlue[ball.player].Message.Unit.destY;
                 ball.destX = unitsBlue[ball.player].Message.Unit.x;
                 ball.destY = unitsBlue[ball.player].Message.Unit.y;
             }
