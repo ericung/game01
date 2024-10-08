@@ -330,56 +330,24 @@ function updateObjects() {
     }
 
     for (var i = 0; i < unitsRed.length; i++) {
-        var speed = 1;
-        if (distance(unitsRed[i].Message.Unit.x, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.y, unitsRed[i].Message.Unit.destY) > 1) {
-            for (var j = 0; j < unitsRed.length; j++) {
-                if ((i !== j) && (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 40) {
-                    speed = -1;
-                    var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
+        var speed = 3;
 
-                    if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 1) {
-                        unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
-                    }
-
-                    if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 1) {
-                        unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
-                    }
-
-                    speed = 0;
-                    j = unitsRed.length;
-                }
-            }
-
-            for (var j = 0; j < unitsBlue.length; j++) {
-                if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
-                    speed = -1;
-                    var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
-
-                    if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.75) {
-                        unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
-                    }
-
-                    if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.75) {
-                        unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
-                    }
-
-                    speed = 0;
-                    j = unitsBlue.length;
-                }
+        for (var j = 0; j < unitsRed.length; j++) {
+            if ((i !== j) && (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 45) {
+                j = unitsRed.length;
             }
         }
 
-        if (speed !== 0) {
-            var angle = Math.atan2(unitsRed[i].Message.Unit.y - unitsRed[i].Message.Unit.destY, unitsRed[i].Message.Unit.x- unitsRed[i].Message.Unit.destX);
-
-            if (Math.abs(unitsRed[i].Message.Unit.destX - unitsRed[i].Message.Unit.x) > 0.75) {
-                unitsRed[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
-            }
-
-            if (Math.abs(unitsRed[i].Message.Unit.destY - unitsRed[i].Message.Unit.y) > 0.75) {
-                unitsRed[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
+        for (var j = 0; j < unitsBlue.length; j++) {
+            if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 45) {
+                unitsRed[i].Message.Unit.destX = unitsRed[i].Message.Unit.x;
+                unitsRed[i].Message.Unit.destY = unitsRed[i].Message.Unit.y;
+                speed = -1;
+                j = unitsBlue.length;
             }
         }
+
+        moveObjectToPoint(unitsRed[i].Message.Unit, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.destY, speed);
 
         if ((distance(unitsRed[i].Message.Unit.x, ballx, unitsRed[i].Message.Unit.y, bally)) < 40) {
             hasball.user = "red";
@@ -388,56 +356,24 @@ function updateObjects() {
     }
 
     for (var i = 0; i < unitsBlue.length; i++) {
-        var speed = 1;
+        var speed = 3;
         if (distance(unitsBlue[i].Message.Unit.x, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.y, unitsBlue[i].Message.Unit.destY) > 0.75) {
             for (var j = 0; j < unitsRed.length; j++) {
-                if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 40) {
-                    speed = -1;
-                    var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x - unitsBlue[i].Message.Unit.destX);
-
-                    if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.75) {
-                        unitsBlue[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
-                    }
-
-                    if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.75) {
-                        unitsBlue[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
-                    }
-
+                if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 50) {
                     speed = 0;
                     j = unitsRed.length;
                 }
             }
 
             for (var j = 0; j < unitsBlue.length; j++) {
-                if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
-                    speed = -1;
-                    var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x - unitsBlue[i].Message.Unit.destX);
-
-                    if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.75) {
-                        unitsBlue[i].Message.Unit.x += speed * Math.cos(angle * 180 / Math.PI);
-                    }
-
-                    if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.75) {
-                        unitsBlue[i].Message.Unit.y += speed * Math.sin(angle * 180 / Math.PI);
-                    }
-
+                if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 50) {
                     speed = 0;
                     j = unitsBlue.length;
                 }
             }
         }
 
-        if (speed !== 0) {
-            var angle = Math.atan2(unitsBlue[i].Message.Unit.y - unitsBlue[i].Message.Unit.destY, unitsBlue[i].Message.Unit.x - unitsBlue[i].Message.Unit.destX);
-
-            if (Math.abs(unitsBlue[i].Message.Unit.destX - unitsBlue[i].Message.Unit.x) > 0.5) {
-                unitsBlue[i].Message.Unit.x += Math.cos(angle * 180 / Math.PI);
-            }
-
-            if (Math.abs(unitsBlue[i].Message.Unit.destY - unitsBlue[i].Message.Unit.y) > 0.5) {
-                unitsBlue[i].Message.Unit.y += Math.sin(angle * 180 / Math.PI);
-            }
-        }
+        moveObjectToPoint(unitsBlue[i].Message.Unit, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.destY, speed);
 
         if ((distance(unitsBlue[i].Message.Unit.x, ballx, unitsBlue[i].Message.Unit.y, bally)) < 40) {
             hasball.user = "blue";
@@ -449,6 +385,30 @@ function updateObjects() {
 // ENDREGION: Main
 
 // REGION: Helper
+
+function moveObjectToPoint(obj, targetX, targetY, speed) {
+    // Calculate the distance between the object and the target point
+    const dx = targetX - obj.x;
+    const dy = targetY - obj.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // If the object is already at the target point, do nothing
+    if (distance === 0) return;
+
+    if (distance < speed) {
+        obj.x = targetX;
+        obj.y = targetY;
+        return;
+    }
+
+    // Calculate the velocity vector
+    const vx = (dx / distance) * speed;
+    const vy = (dy / distance) * speed;
+
+    // Update the object's position
+    obj.x += vx;
+    obj.y += vy;
+}
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
