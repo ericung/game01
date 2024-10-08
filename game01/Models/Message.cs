@@ -7,5 +7,7 @@
         List<Unit>? Red { get; set; }
 
         List<Unit>? Blue { get; set; }
+
+        Ball Ball { get; set; }
     }
 }
