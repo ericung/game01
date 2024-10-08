@@ -334,15 +334,14 @@ function updateObjects() {
 
         for (var j = 0; j < unitsRed.length; j++) {
             if ((i !== j) && (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 45) {
+                speed = 0;
                 j = unitsRed.length;
             }
         }
 
         for (var j = 0; j < unitsBlue.length; j++) {
             if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 45) {
-                unitsRed[i].Message.Unit.destX = unitsRed[i].Message.Unit.x;
-                unitsRed[i].Message.Unit.destY = unitsRed[i].Message.Unit.y;
-                speed = -1;
+                speed = 0;
                 j = unitsBlue.length;
             }
         }
