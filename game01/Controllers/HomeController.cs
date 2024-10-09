@@ -1,8 +1,8 @@
-﻿using game01.Models;
+﻿using game01webapp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace game01.Controllers
+namespace game01webapp.Controllers
 {
     public class HomeController : Controller
     {

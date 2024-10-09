@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user",
+      "dynamicId": null
+    },
+    "compute.appService1": {
+      "group": "connections",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/game01webapp20241009154214",
+      "type": "compute.appService.linux"
+    }
+  }
+}
