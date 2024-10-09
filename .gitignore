@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/game01webapp/Properties/ServiceDependencies/game0110092024 - FTP/profile.arm.json
+/game01webapp/Properties/ServiceDependencies/game0110092024 - FTP/signalr1.arm.json
+/game01webapp/Properties/ServiceDependencies/game0110092024 - Zip Deploy
+/game01webapp/Properties/ServiceDependencies/game0110092024 - Zip Deploy/profile.arm.json
+/game01webapp/Properties/serviceDependencies.game0110092024 - FTP.json
