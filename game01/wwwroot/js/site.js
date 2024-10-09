@@ -221,7 +221,7 @@ canvas.addEventListener('mouseup', function (evt) {
     }
 
     if (evt.button == 2) {
-        if (user == "red") {
+        if ((user === "red")&&(ball.user === user)) {
             for (var i = 0; i < unitsRed.length; i++) {
                 if ((ball.player === i)&&(distance(unitsRed[i].Message.Unit.x,xPos,unitsRed[i].Message.Unit.y,yPos) > ball.speed)) {
                     ball.player = -1;
@@ -232,7 +232,7 @@ canvas.addEventListener('mouseup', function (evt) {
             }
         }
 
-        if (user == "blue") {
+        if ((user == "blue")&&(ball.user === user)) {
             for (var i = 0; i < unitsBlue.length; i++) {
                 if ((ball.player === i)&&(distance(unitsBlue[i].Message.Unit.x,xPos,unitsBlue[i].Message.Unit.y,yPos) > ball.speed)) {
                     ball.player = -1;

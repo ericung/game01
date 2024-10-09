@@ -41,7 +41,6 @@ namespace Hubs
             }
 
             await Clients.Client(connectionId).SendAsync("JoinedGroup", ConnectionMap[connectionId]);
-            //await Clients.All.SendAsync("JoinedGroup", ConnectionMap[connectionId]);
         }
 
         public async Task LeaveGroup(string connectionId)
