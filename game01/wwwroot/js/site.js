@@ -1,5 +1,4 @@
-﻿// REGION: ConnectionHub
-"use strict";
+﻿"use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 let connected = false;
 var canvas = document.getElementById("field");
@@ -13,6 +12,8 @@ let user;
 let connectionId;
 var selected = -1;
 var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, speed: 5 };
+
+// REGION: Connection Functions
 
 connection.on("ReceiveMessage", function (user, message) {
     if (message.Message.Blue !== undefined) {
@@ -63,6 +64,10 @@ connection.on("SendGroupList", function (groupList) {
     }
 });
 
+// ENDREGION: Connection Settings
+
+// REGION: Connection Main
+
 connection.start().then(function () {
     connected = true;
 }).catch(function (err) {
@@ -80,7 +85,7 @@ async function WaitForConnection() {
     }
 }
 
-// ENDREGION: ConnectionHub
+// ENDREGION: Connection Main
 
 // REGION: GroupActions
 
@@ -96,7 +101,7 @@ async function createGroup() {
         return console.error(err.toString());
     });
 }
-0
+
 async function refreshGroups() {
     await connection.invoke("GetGroups", connectionId).catch(function (err) {
         return console.error(err.toString());
@@ -138,6 +143,7 @@ $(document).ready(async function () {
 // ENDREGION: Main
 
 // REGION: Event Listener
+
 document.getElementById("network").addEventListener("change", function (evt) {
     connectionId = evt.value;
 });
@@ -152,7 +158,7 @@ canvas.addEventListener('mouseup', function (evt) {
     var mousePos = getMousePos(canvas, evt);
     var xPos = x;
     var yPos = y;
-    var radius = Math.pow(20 + 20, 2);
+    var radius = Math.pow(40, 2);
     var pushUnit = true;
     var units = document.getElementById("units").value;
 
@@ -243,6 +249,7 @@ canvas.addEventListener('mouseup', function (evt) {
             }
         }
     }
+
     connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
         return console.error(err.toString());
     });
@@ -257,13 +264,10 @@ canvas.addEventListener('mouseup', function (evt) {
     draw();
 }, false);
 
-
-
 // ENDREGION: eventListener
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     ctx.beginPath();
     ctx.setLineDash([1, 5]);
     ctx.lineWidth = "2";
@@ -271,9 +275,9 @@ function draw() {
     ctx.moveTo(0, canvas.height/2);
     ctx.lineTo(canvas.width, canvas.height/2);
     ctx.stroke();
-
     ctx.strokeStyle = "black";
     ctx.setLineDash([]);
+
     for (var i = 0; i < unitsRed.length; i++) {
         if ((user == "red")&&(selected == i)) {
             ctx.fillStyle = "#000000";
@@ -310,11 +314,10 @@ function draw() {
         ctx.stroke();
     }
 
-    // debug purposes only
     ctx.font = "24px serif";
-    ctx.strokeText(x + ": " + y, 50, 50);
-    ctx.strokeText(ball.x + ": " + ball.y, 50, 75);
-    ctx.strokeText(ball.destX + ": " + ball.destY, 50, 100);
+    ctx.strokeText(Math.round(x) + ": " + Math.round(y), 50, 50);
+    ctx.strokeText(Math.round(ball.x) + ": " + Math.round(ball.y), 50, 75);
+    ctx.strokeText(Math.round(ball.destX) + ": " + Math.round(ball.destY), 50, 100);
 }
 
 function updateObjects() {
@@ -364,19 +367,18 @@ function updateObjects() {
 
     for (var i = 0; i < unitsBlue.length; i++) {
         var speed = 3;
-        if (distance(unitsBlue[i].Message.Unit.x, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.y, unitsBlue[i].Message.Unit.destY) > 0.75) {
-            for (var j = 0; j < unitsRed.length; j++) {
-                if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 50) {
-                    speed = 0;
-                    j = unitsRed.length;
-                }
-            }
 
-            for (var j = 0; j < unitsBlue.length; j++) {
-                if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 50) {
-                    speed = 0;
-                    j = unitsBlue.length;
-                }
+        for (var j = 0; j < unitsRed.length; j++) {
+            if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 45) {
+                speed = 0;
+                j = unitsRed.length;
+            }
+        }
+
+        for (var j = 0; j < unitsBlue.length; j++) {
+            if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 45) {
+                speed = 0;
+                j = unitsBlue.length;
             }
         }
 
@@ -394,28 +396,26 @@ function updateObjects() {
 // REGION: Helper
 
 function moveObjectToPoint(obj, targetX, targetY, speed) {
-    // Calculate the distance between the object and the target point
     const dx = targetX - obj.x;
     const dy = targetY - obj.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // If the object is already at the target point, do nothing
     if (distance === 0) return;
 
+    // Snap to target if the distance is too small 
+    // to move so that it doesn't oscillate too much
     if (distance < speed) {
         obj.x = targetX;
         obj.y = targetY;
         return;
     }
 
-    // Calculate the velocity vector
     const vx = (dx / distance) * speed;
     const vy = (dy / distance) * speed;
-
-    // Update the object's position
     obj.x += vx;
     obj.y += vy;
 }
+
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -426,6 +426,7 @@ function getMousePos(canvas, evt) {
     };
 }
 
+// this function is mainly used for collision detection
 function distance(x1, x2, y1, y2) {
     return Math.abs(Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2)));
 }
