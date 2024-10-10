@@ -38,3 +38,5 @@ as possible.
 [An example of an experiment from this](http://github.com/ericung/topologyoffootwork)
 
 [Canvas Refresh in Javascript](https://stackoverflow.com/questions/64341953/how-do-you-force-a-canvas-refresh-in-javascript)
+
+[A Note on Publishing](https://stackoverflow.com/questions/68325646/error-code-550-when-publishing-net-core-3-1-app-through-ftp)
