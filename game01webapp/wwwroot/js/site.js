@@ -11,6 +11,8 @@ var unitsBlue = [];
 let user;
 let connectionId;
 var selected = -1;
+var scoreRed = 0;
+var scoreBlue = 0;
 var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, speed: 5 };
 
 // REGION: Connection Functions
@@ -180,7 +182,6 @@ canvas.addEventListener('mouseup', function (evt) {
         if (pushUnit) {
             if (user == "red") {
                 if ((selected == i) && (evt.button == 0)) {
-                    console.log("hello world");
                     unitsRed[i].Message.Unit.destX = x;
                     unitsRed[i].Message.Unit.destY = y;
                 }
@@ -278,6 +279,20 @@ function draw() {
     ctx.moveTo(0, canvas.height/2);
     ctx.lineTo(canvas.width, canvas.height/2);
     ctx.stroke();
+    ctx.beginPath();
+    ctx.setLineDash([1, 5]);
+    ctx.lineWidth = "2";
+    ctx.strokeStyle = "black";
+    ctx.moveTo(0, 50);
+    ctx.lineTo(canvas.width, 50);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.setLineDash([1, 5]);
+    ctx.lineWidth = "2";
+    ctx.strokeStyle = "black";
+    ctx.moveTo(0, 750);
+    ctx.lineTo(canvas.width, 750);
+    ctx.stroke();
     ctx.strokeStyle = "black";
     ctx.setLineDash([]);
 
@@ -318,9 +333,11 @@ function draw() {
     }
 
     ctx.font = "24px serif";
-    ctx.strokeText(Math.round(x) + ": " + Math.round(y), 50, 50);
-    ctx.strokeText(Math.round(ball.x) + ": " + Math.round(ball.y), 50, 75);
-    ctx.strokeText(Math.round(ball.destX) + ": " + Math.round(ball.destY), 50, 100);
+    ctx.strokeText("Red: " + scoreRed, 50, 50);
+    ctx.strokeText("Blue: " + scoreBlue, 50, 75);
+    ctx.strokeText(Math.round(x) + ": " + Math.round(y), 50, 100);
+    ctx.strokeText(Math.round(ball.x) + ": " + Math.round(ball.y), 50, 125);
+    ctx.strokeText(Math.round(ball.destX) + ": " + Math.round(ball.destY), 50, 150);
 }
 
 function updateObjects() {
@@ -372,6 +389,14 @@ function updateObjects() {
             ball.user = "red";
             ball.player = i;
         }
+
+        if ((unitsRed[i].Message.Unit.y > 750) && (user === ball.user) && (ball.player === i)) {
+            scoreRed++;
+            unitsRed[i].Message.Unit.x = Math.random()*1200 + 100;
+            unitsRed[i].Message.Unit.y = Math.random() * 100 + 100;
+            unitsRed[i].Message.Unit.destX = unitsRed[i].Message.Unit.x;
+            unitsRed[i].Message.Unit.destY = unitsRed[i].Message.Unit.y;
+        }
     }
 
     for (var i = 0; i < unitsBlue.length; i++) {
@@ -402,6 +427,14 @@ function updateObjects() {
         if ((distance(unitsBlue[i].Message.Unit.x, ball.x, unitsBlue[i].Message.Unit.y, ball.y)) < 40) {
             ball.user = "blue";
             ball.player = i;
+        }
+
+        if ((unitsBlue[i].Message.Unit.y < 50) && (user === ball.user) && (ball.player === i)) {
+            scoreBlue++;
+            unitsBlue[i].Message.Unit.x = Math.random()*1200 + 100;
+            unitsBlue[i].Message.Unit.y = Math.random() * 100 + 600;
+            unitsBlue[i].Message.Unit.destX = unitsBlue[i].Message.Unit.x;
+            unitsBlue[i].Message.Unit.destY = unitsBlue[i].Message.Unit.y;
         }
     }
 }
