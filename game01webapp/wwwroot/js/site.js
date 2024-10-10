@@ -179,7 +179,8 @@ canvas.addEventListener('mouseup', function (evt) {
     for (let i = 0; i < unitsRed.length; i++) {
         if (pushUnit) {
             if (user == "red") {
-                if ((selected == i)&&(evt.button == 0)) {
+                if ((selected == i) && (evt.button == 0)) {
+                    console.log("hello world");
                     unitsRed[i].Message.Unit.destX = x;
                     unitsRed[i].Message.Unit.destY = y;
                 }
@@ -229,11 +230,13 @@ canvas.addEventListener('mouseup', function (evt) {
     if (evt.button == 2) {
         if ((user === "red")&&(ball.user === user)) {
             for (var i = 0; i < unitsRed.length; i++) {
-                if ((ball.player === i)&&(distance(unitsRed[i].Message.Unit.x,xPos,unitsRed[i].Message.Unit.y,yPos) > ball.speed)) {
+                if ((ball.player === i) && (distance(unitsRed[i].Message.Unit.x, xPos, unitsRed[i].Message.Unit.y, yPos) > ball.speed)) {
                     ball.player = -1;
                     ball.destX = xPos;
                     ball.destY = yPos;
-                    moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed+40);
+                    moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed + 40);
+                } else {
+
                 }
             }
         }
@@ -344,15 +347,21 @@ function updateObjects() {
         var speed = 3;
 
         for (var j = 0; j < unitsRed.length; j++) {
-            if ((i !== j) && (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 45) {
-                speed = 0;
-                j = unitsRed.length;
+            if (i !== j) {
+                if (distance(unitsRed[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsRed[j].Message.Unit.y) < 40) {
+                    moveObjectToPoint(unitsRed[i].Message.Unit, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.destY, -speed*2);
+                    unitsRed[i].Message.Unit.destX = unitsRed[i].Message.Unit.x;
+                    unitsRed[i].Message.Unit.destY = unitsRed[i].Message.Unit.y;
+                    j = unitsRed.length;
+                }
             }
         }
 
         for (var j = 0; j < unitsBlue.length; j++) {
-            if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 45) {
-                speed = 0;
+            if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
+                moveObjectToPoint(unitsRed[i].Message.Unit, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.destY, -speed*2);
+                unitsRed[i].Message.Unit.destX = unitsRed[i].Message.Unit.x;
+                unitsRed[i].Message.Unit.destY = unitsRed[i].Message.Unit.y;
                 j = unitsBlue.length;
             }
         }
@@ -369,16 +378,22 @@ function updateObjects() {
         var speed = 3;
 
         for (var j = 0; j < unitsRed.length; j++) {
-            if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 45) {
-                speed = 0;
-                j = unitsRed.length;
+            if ((distance(unitsBlue[i].Message.Unit.x, unitsRed[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsRed[j].Message.Unit.y)) < 40) {
+                moveObjectToPoint(unitsBlue[i].Message.Unit, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.destY, -speed*2);
+                unitsBlue[i].Message.Unit.destX = unitsBlue[i].Message.Unit.x;
+                unitsBlue[i].Message.Unit.destY = unitsBlue[i].Message.Unit.y;
+                j = unitsBlue.length;
             }
         }
 
         for (var j = 0; j < unitsBlue.length; j++) {
-            if ((i !== j) && (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 45) {
-                speed = 0;
-                j = unitsBlue.length;
+            if (i !== j) {
+                if (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y) < 40) {
+                    moveObjectToPoint(unitsBlue[i].Message.Unit, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.destY, -speed*2);
+                    unitsBlue[i].Message.Unit.destX = unitsBlue[i].Message.Unit.x;
+                    unitsBlue[i].Message.Unit.destY = unitsBlue[i].Message.Unit.y;
+                    j = unitsBlue.length;
+                }
             }
         }
 
