@@ -1,5 +1,7 @@
 # game01
 
+[demo](https://game0110092024-cwaub7bnayh4fugm.canadacentral-01.azurewebsites.net/) - azure site
+
 A simple game where there are two opponents and two modes - free for all and reach the objective.
 Once the basis of this game is completed, the next version will have more game modes, more rules,
 customizable units, sprites, and more. 
