@@ -40,3 +40,5 @@ as possible.
 [Canvas Refresh in Javascript](https://stackoverflow.com/questions/64341953/how-do-you-force-a-canvas-refresh-in-javascript)
 
 [A Note on Publishing](https://stackoverflow.com/questions/68325646/error-code-550-when-publishing-net-core-3-1-app-through-ftp)
+
+[How to import SignalR in React Component?](https://stackoverflow.com/questions/46190574/how-to-import-signalr-in-react-component)

@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "game01webapp", "game01webapp\game01webapp.csproj", "{16D0060A-9A22-4310-ADB6-08236370D6A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game01app.Server", "game01app\game01app.Server\game01app.Server.csproj", "{FA0A8EA6-00F0-4AF3-A7EE-36037821AA5A}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "game01app.client", "game01app\game01app.client\game01app.client.esproj", "{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,16 @@ Global
 		{16D0060A-9A22-4310-ADB6-08236370D6A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16D0060A-9A22-4310-ADB6-08236370D6A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16D0060A-9A22-4310-ADB6-08236370D6A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA0A8EA6-00F0-4AF3-A7EE-36037821AA5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA0A8EA6-00F0-4AF3-A7EE-36037821AA5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA0A8EA6-00F0-4AF3-A7EE-36037821AA5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA0A8EA6-00F0-4AF3-A7EE-36037821AA5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A327E9-95EF-4B07-B454-5D2E89C46AF2}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
