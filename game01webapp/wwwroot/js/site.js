@@ -236,9 +236,7 @@ canvas.addEventListener('mouseup', function (evt) {
                     ball.destX = xPos;
                     ball.destY = yPos;
                     moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed + 40);
-                } else {
-
-                }
+                } 
             }
         }
 

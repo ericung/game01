@@ -15,8 +15,76 @@ const Canvas = () => {
         const width = 1400;
         const height = 800; // Height of the div
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(100, width / height, 1, 10000 );
         const renderer = new THREE.WebGLRenderer();
+        
+        renderer.setSize(width, height);
+        renderer.setClearColor(0xffffff, 1);
+        //renderer.setClearColor(0x000000, 1);
+        mountRef.current.appendChild(renderer.domElement);
+
+        const LINEDASHSIZE = 0.05;
+        const LINEGAPSIZE = 0.05;
+        
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+
+        scene.add(cube);
+        camera.position.set(0, 0, 500);
+
+        const materialRedLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
+        const pointsRedLine = [];
+        pointsRedLine.push(new THREE.Vector3(-1400, 500, 0));
+        pointsRedLine.push(new THREE.Vector3(1400, 500, 0));
+        const geometryRedLine = new THREE.BufferGeometry().setFromPoints(pointsRedLine);
+        const line = new THREE.Line(geometryRedLine, materialRedLine);
+        line.computeLineDistances();
+        scene.add(line);
+
+        const materialBlueLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
+        const pointsBlueLine = [];
+        pointsBlueLine.push(new THREE.Vector3(-1400, -500, 0));
+        pointsBlueLine.push(new THREE.Vector3(1400, -500, 0));
+        const geometryBlueLine = new THREE.BufferGeometry().setFromPoints(pointsBlueLine);
+        const lineBlueLine = new THREE.Line(geometryBlueLine, materialBlueLine);
+        lineBlueLine.computeLineDistances();
+        scene.add(lineBlueLine);
+
+        const materialCenterLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
+        const pointsCenterLine = [];
+        pointsCenterLine.push(new THREE.Vector3(-1400, 0, 0));
+        pointsCenterLine.push(new THREE.Vector3(1400, 0, 0));
+        const geometryCenterLine = new THREE.BufferGeometry().setFromPoints(pointsCenterLine);
+        const lineCenterLine = new THREE.Line(geometryCenterLine, materialCenterLine);
+        lineCenterLine.computeLineDistances();
+        scene.add(lineCenterLine);
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        const onMouseMove = (event) => {
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children);
+
+            if ((intersects.length > 0)&&(intersects.length > 0)) {
+                const intersectedObject = intersects[0];
+                console.log('Mouse intersects:', intersectedObject.point.x + ": " + intersectedObject.point.y + ": " + event.x + ": " + event.y);
+            }
+        };
+
+    window.addEventListener('mousemove', onMouseMove);
+
+		const animate = function() {
+			requestAnimationFrame(animate);
+            cube.rotation.x = 0.001;
+            cube.rotation.y = 0.001;
+			renderer.render(scene, camera);
+		}
 
         var x = 0;
         var y = 0;
@@ -25,25 +93,8 @@ const Canvas = () => {
         var selected = -1;
         var scoreRed = 0;
         var scoreBlue = 0;
-        var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, speed: 5 };
+        var ball = { x: 0, y: 0, destX: 0, destY: 0, user: "none", player: -1, speed: 5 };
 
-        renderer.setSize(width, height);
-        mountRef.current.appendChild(renderer.domElement);
-
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-
-        scene.add(cube);
-        camera.position.z = 5;
-
-		const animate = function() {
-			requestAnimationFrame(animate);
-            cube.rotation.x = 0.001;
-            cube.rotation.y = 0.001;
-			renderer.render(scene, camera);
-		}
-        
         connection.on("Connected", function (userInfo) {
             connectionId = userInfo.connectionId;
             var datalist = document.getElementById("networks");
@@ -141,7 +192,6 @@ const Canvas = () => {
             var mousePos = getMousePos(window, evt);
             var xPos = x;
             var yPos = y;
-            var radius = Math.pow(40, 2);
             var pushUnit = true;
             var units = document.getElementById("units").value;
 
@@ -211,7 +261,7 @@ const Canvas = () => {
 
             if (evt.button == 2) {
                 if ((user === "red")&&(ball.user === user)) {
-                    for (var i = 0; i < unitsRed.length; i++) {
+                    for (let i = 0; i < unitsRed.length; i++) {
                         if ((ball.player === i) && (distance(unitsRed[i].Message.Unit.x, xPos, unitsRed[i].Message.Unit.y, yPos) > ball.speed)) {
                             ball.player = -1;
                             ball.destX = xPos;
@@ -222,7 +272,7 @@ const Canvas = () => {
                 }
 
                 if ((user == "blue")&&(ball.user === user)) {
-                    for (var i = 0; i < unitsBlue.length; i++) {
+                    for (let i = 0; i < unitsBlue.length; i++) {
                         if ((ball.player === i)&&(distance(unitsBlue[i].Message.Unit.x,xPos,unitsBlue[i].Message.Unit.y,yPos) > ball.speed)) {
                             ball.player = -1;
                             ball.destX = xPos;
@@ -342,9 +392,8 @@ const Canvas = () => {
             }
 
             var speed = 0;
-            var i, j;
 
-            for (i = 0; i < unitsRed.length; i++) {
+            for (let i = 0; i < unitsRed.length; i++) {
                 speed = 3;
 
                 for (var j = 0; j < unitsRed.length; j++) {
@@ -358,7 +407,7 @@ const Canvas = () => {
                     }
                 }
 
-                for (j = 0; j < unitsBlue.length; j++) {
+                for (let j = 0; j < unitsBlue.length; j++) {
                     if ((distance(unitsRed[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsRed[i].Message.Unit.y, unitsBlue[j].Message.Unit.y)) < 40) {
                         moveObjectToPoint(unitsRed[i].Message.Unit, unitsRed[i].Message.Unit.destX, unitsRed[i].Message.Unit.destY, -speed*2);
                         unitsRed[i].Message.Unit.destX = unitsRed[i].Message.Unit.x;
@@ -383,7 +432,7 @@ const Canvas = () => {
                 }
             }
 
-            for (i = 0; i < unitsBlue.length; i++) {
+            for (let i = 0; i < unitsBlue.length; i++) {
                 speed = 3;
 
                 for (var j = 0; j < unitsRed.length; j++) {
@@ -395,7 +444,7 @@ const Canvas = () => {
                     }
                 }
 
-                for (j = 0; j < unitsBlue.length; j++) {
+                for (let j = 0; j < unitsBlue.length; j++) {
                     if (i !== j) {
                         if (distance(unitsBlue[i].Message.Unit.x, unitsBlue[j].Message.Unit.x, unitsBlue[i].Message.Unit.y, unitsBlue[j].Message.Unit.y) < 40) {
                             moveObjectToPoint(unitsBlue[i].Message.Unit, unitsBlue[i].Message.Unit.destX, unitsBlue[i].Message.Unit.destY, -speed*2);
@@ -425,45 +474,6 @@ const Canvas = () => {
 
         // ENDREGION: Main
 
-        // REGION: Helper
-
-        function moveObjectToPoint(obj, targetX, targetY, speed) {
-            const dx = targetX - obj.x;
-            const dy = targetY - obj.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance === 0) return;
-
-            // Snap to target if the distance is too small 
-            // to move so that it doesn't oscillate too much
-            if (distance < speed) {
-                obj.x = targetX;
-                obj.y = targetY;
-                return;
-            }
-
-            const vx = (dx / distance) * speed;
-            const vy = (dy / distance) * speed;
-            obj.x += vx;
-            obj.y += vy;
-        }
-
-        function getMousePos(canvas, evt) {
-            var rect = canvas.getBoundingClientRect();
-
-            return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-            };
-        }
-
-        // this function is mainly used for collision detection
-        function distance(x1, x2, y1, y2) {
-            return Math.abs(Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2)));
-        }
-
-        // ENDREGION: Helper
-
         WaitForConnection();
 
         connection.invoke("Connect").catch(function (err) {
@@ -483,11 +493,48 @@ const Canvas = () => {
     }, []);
 
     return (
-        <div id="maincontent">
-            <div className="canvas" ref={mountRef} style={{ width: '1400px', height: '800px' }}></div>
-        </div>
+        <div id="maincontent" ref={mountRef} ></div>
     );
 }
 
 export default Canvas;
+
+// REGION: Helper
+
+function moveObjectToPoint(obj, targetX, targetY, speed) {
+    const dx = targetX - obj.x;
+    const dy = targetY - obj.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance === 0) return;
+
+    // Snap to target if the distance is too small 
+    // to move so that it doesn't oscillate too much
+    if (distance < speed) {
+        obj.x = targetX;
+        obj.y = targetY;
+        return;
+    }
+
+    const vx = (dx / distance) * speed;
+    const vy = (dy / distance) * speed;
+    obj.x += vx;
+    obj.y += vy;
+}
+
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
+}
+
+// this function is mainly used for collision detection
+function distance(x1, x2, y1, y2) {
+    return Math.abs(Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1, 2)));
+}
+
+// ENDREGION: Helper
 
