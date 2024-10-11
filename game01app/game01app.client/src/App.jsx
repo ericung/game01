@@ -14,7 +14,9 @@ function App() {
 
 export default App;
 
+
 var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+/*
 let connected = false;
 // var canvas = document.getElementById("field");
 // var ctx = canvas.getContext("2d");
@@ -29,11 +31,12 @@ var selected = -1;
 var scoreRed = 0;
 var scoreBlue = 0;
 var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, speed: 5 };
+*/
 
 // REGION: Connection Functions
 
-/*
-connection.on("ReceiveMessage", function (user, message) {
+connection.on("ReceiveMessage", function (/*user, message*/) {
+    /*
     if (message.Message.Blue !== undefined) {
         unitsBlue = message.Message.Blue;
     }
@@ -47,8 +50,11 @@ connection.on("ReceiveMessage", function (user, message) {
     }
 
     draw();
+    */
+    console.log("hello world");
 });
 
+/*
 connection.on("Connected", function (userInfo) {
     connectionId = userInfo.connectionId;
     var datalist = document.getElementById("networks");
