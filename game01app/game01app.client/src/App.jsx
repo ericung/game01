@@ -1,4 +1,3 @@
-import * as signalR from '@microsoft/signalr';
 import './App.css';
 import Interface from './Interface';
 import Canvas from './Canvas';
@@ -15,8 +14,8 @@ function App() {
 export default App;
 
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 /*
+var connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 let connected = false;
 // var canvas = document.getElementById("field");
 // var ctx = canvas.getContext("2d");
@@ -35,8 +34,8 @@ var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, s
 
 // REGION: Connection Functions
 
-connection.on("ReceiveMessage", function (/*user, message*/) {
-    /*
+/*
+connection.on("ReceiveMessage", function (user, message) {
     if (message.Message.Blue !== undefined) {
         unitsBlue = message.Message.Blue;
     }
@@ -49,12 +48,10 @@ connection.on("ReceiveMessage", function (/*user, message*/) {
         ball = message.Message.Ball;
     }
 
-    draw();
-    */
+    animate();
     console.log("hello world");
 });
 
-/*
 connection.on("Connected", function (userInfo) {
     connectionId = userInfo.connectionId;
     var datalist = document.getElementById("networks");
