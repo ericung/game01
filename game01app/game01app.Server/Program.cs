@@ -10,10 +10,24 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins("https://localhost:5173");
+            builder.AllowAnyMethod();
+            builder.AllowAnyHeader();
+            builder.AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -28,7 +42,11 @@ app.UseAuthorization();
 
 app.MapFallbackToFile("/index.html");
 
-app.MapHub<ConnectionHub>("/messageHub");
+app.UseEndpoints(endpoints =>
+{
+    _ = endpoints.MapControllers();
+    _ = endpoints.MapHub<ConnectionHub>("/messageHub");
+});
 
 
 app.MapControllerRoute(

@@ -1,9 +1,11 @@
 using game01webapp.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace game01app.Controllers
 {
+    [EnableCors("AllowSpecificOrigin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
