@@ -1,23 +1,37 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 
 const Canvas = () => {
     const mountRef = useRef(null);
 
 	useEffect (() => {
+        const stats = new Stats();
+        // document.body.appendChild(stats.dom);
         const width = 1400;
-        const height = 800; // Height of the div
+        const height = 1000; // Height of the div
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(100, width / height, 1, 10000 );
+        //const camera = new THREE.PerspectiveCamera(100, width / height, 1, 10000 );
+        const camera = new THREE.OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0.01, 100000);
+        camera.setViewOffset(width, height, 0, 0, width, height);
+        camera.position.set(0, 0, 10000);
         const renderer = new THREE.WebGLRenderer();
         
         renderer.setSize(width, height);
         renderer.setClearColor(0xffffff, 1);
-        //renderer.setClearColor(0x000000, 1);
         mountRef.current.appendChild(renderer.domElement);
 
-        const LINEDASHSIZE = 0.05;
-        const LINEGAPSIZE = 0.05;
+        /*
+        let cameraControls = new OrbitControls( camera, renderer.domElement );
+        cameraControls.target.set( 0, 40, 0 );
+        cameraControls.maxDistance = 400;
+        cameraControls.minDistance = 10;
+        cameraControls.update();
+        */
+
+        const LINEDASHSIZE = 0.09;
+        const LINEGAPSIZE = 0.09;
         
         const geometry = new THREE.BoxGeometry();
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -28,8 +42,8 @@ const Canvas = () => {
 
         const materialRedLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
         const pointsRedLine = [];
-        pointsRedLine.push(new THREE.Vector3(-1400, 500, 0));
-        pointsRedLine.push(new THREE.Vector3(1400, 500, 0));
+        pointsRedLine.push(new THREE.Vector3(-1400, 300, 0));
+        pointsRedLine.push(new THREE.Vector3(1400, 300, 0));
         const geometryRedLine = new THREE.BufferGeometry().setFromPoints(pointsRedLine);
         const line = new THREE.Line(geometryRedLine, materialRedLine);
         line.computeLineDistances();
@@ -37,8 +51,8 @@ const Canvas = () => {
 
         const materialBlueLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
         const pointsBlueLine = [];
-        pointsBlueLine.push(new THREE.Vector3(-1400, -500, 0));
-        pointsBlueLine.push(new THREE.Vector3(1400, -500, 0));
+        pointsBlueLine.push(new THREE.Vector3(-1400, -300, 0));
+        pointsBlueLine.push(new THREE.Vector3(1400, -300, 0));
         const geometryBlueLine = new THREE.BufferGeometry().setFromPoints(pointsBlueLine);
         const lineBlueLine = new THREE.Line(geometryBlueLine, materialBlueLine);
         lineBlueLine.computeLineDistances();
@@ -53,11 +67,18 @@ const Canvas = () => {
         lineCenterLine.computeLineDistances();
         scene.add(lineCenterLine);
 
+        const ballGeometry = new THREE.CircleGeometry(25, 32);
+        const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
+        const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+        scene.add(ball);
+
 		const animate = function() {
+            stats.begin();
 			requestAnimationFrame(animate);
             cube.rotation.x = 0.001;
             cube.rotation.y = 0.001;
 			renderer.render(scene, camera);
+            stats.end();
 		}
 
         setInterval(() => {
