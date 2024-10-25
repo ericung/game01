@@ -22,6 +22,9 @@ const Canvas = () => {
         renderer.setClearColor(0xffffff, 1);
         mountRef.current.appendChild(renderer.domElement);
 
+        camera.lookAt(0, 0, 0);
+        camera.position.set(0, 0, 500);
+
         /*
         let cameraControls = new OrbitControls( camera, renderer.domElement );
         cameraControls.target.set( 0, 40, 0 );
@@ -33,12 +36,12 @@ const Canvas = () => {
         const LINEDASHSIZE = 0.09;
         const LINEGAPSIZE = 0.09;
         
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
+        const planeGeometry = new THREE.PlaneGeometry(width, height);
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x90ee90 });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.position.z = -1;
 
-        scene.add(cube);
-        camera.position.set(0, 0, 500);
+        scene.add(plane);
 
         const materialRedLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
         const pointsRedLine = [];
@@ -72,11 +75,29 @@ const Canvas = () => {
         const ball = new THREE.Mesh(ballGeometry, ballMaterial);
         scene.add(ball);
 
+        const unitRedMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        raycaster.setFromCamera(mouse, camera);
+
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            const intersects = raycaster.intersectObjects(scene.children);
+
+            if (intersects.length > 0) {
+                const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
+                redBall.position.set(mouse.x, mouse.y, 0);
+                scene.add(redBall);
+            }
+        }
+
+        window.addEventListener('mouseup', onMouseClick);
+
 		const animate = function() {
             stats.begin();
 			requestAnimationFrame(animate);
-            cube.rotation.x = 0.001;
-            cube.rotation.y = 0.001;
 			renderer.render(scene, camera);
             stats.end();
 		}
