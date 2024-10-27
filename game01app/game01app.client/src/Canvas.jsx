@@ -89,7 +89,7 @@ const Canvas = () => {
         */
 
         const unitRedMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
+        const unitBlueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
         /*
         //const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -115,11 +115,159 @@ const Canvas = () => {
         redBall.position.z = -5;
         scene.add(redBall);
         */
+        // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+        // let connected = false;
+        let user = "red";
+        // let connectionId;
 
         const mouse = { x: 0, y: 0 };
+        var unitsRed = [];
+        var unitsBlue = [];
+        var selected = -1;
+        // var scoreRed = 0;
+        // var scoreBlue = 0;
+        var ball = { x: 700, y: 400, destX: 700, destY: 400, user: "none", player: -1, speed: 5 };
 
-        function onMouseClick(event) {
+        function onMouseClick() {
 
+            var mousePos = getMousePos();
+            var xPos = mousePos.x;
+            var yPos = mousePos.y;
+            //var radius = Math.pow(40, 2);
+            var pushUnit = true;
+            var units = document.getElementById("units").value;
+
+            for (let i = 0; i < unitsRed.length; i++) {
+                /*
+                if ((distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y) < 20) && (pushUnit)) {
+                    pushUnit = false;
+
+                    if (user == "red") {
+                        if (selected == i) {
+                            selected = -1;
+                        } else {
+                            selected = i;
+                        }
+                    }
+                }
+                */
+            }
+
+            /*
+            for (let i = 0; i < unitsRed.length; i++) {
+                if (pushUnit) {
+                    if (user == "red") {
+                        if ((selected == i) && (evt.button == 0)) {
+                            unitsRed[i].Message.Unit.destX = x;
+                            unitsRed[i].Message.Unit.destY = y;
+                        }
+                    }
+                }
+            }
+            */
+
+            /*
+            for (let i = 0; i < unitsBlue.length; i++) {
+                if ((distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y) < 20) && (pushUnit)) {
+                    pushUnit = false;
+
+                    if (user == "blue") {
+                        if (selected == i) {
+                            selected = -1;
+                        } else {
+                            selected = i;
+                        }
+                    }
+                }
+            }
+            */
+
+            /*
+            for (let i = 0; i < unitsBlue.length; i++) {
+                if (pushUnit) {
+                    if (user == "blue") {
+                        if ((selected == i)&&(evt.button == 0)) {
+                            unitsBlue[i].Message.Unit.destX = x;
+                            unitsBlue[i].Message.Unit.destY = y;
+                        }
+                    }
+                }
+            }
+            */
+            
+            if ((user == "red") && (mousePos.y <= 2.95) && (mousePos.y >= .05)/*&& (pushUnit) && (unitsRed.length < units)*/)
+            {
+                //unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsRed.length } } });
+
+                const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
+                scene.add(redBall);
+                redBall.position.copy(mousePos);
+                console.log("y: " + mousePos.y);
+                // evt.preventDefault();
+            }
+
+            if ((user == "blue") && (mousePos.y >= -2.95) &&(mousePos.y <= -0.05)/*&& (pushUnit) && (unitsBlue.length < units)*/)
+            {
+                //unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsBlue.length } } });
+                const blueBall = new THREE.Mesh(ballGeometry, unitBlueMaterial);
+                scene.add(blueBall);
+                blueBall.position.copy(mousePos);
+
+                // evt.preventDefault();
+            }
+
+            /*
+            if (evt.button == 2) {
+                if ((user === "red")&&(ball.user === user)) {
+                    for (var i = 0; i < unitsRed.length; i++) {
+                        if ((ball.player === i) && (distance(unitsRed[i].Message.Unit.x, xPos, unitsRed[i].Message.Unit.y, yPos) > ball.speed)) {
+                            ball.player = -1;
+                            ball.destX = xPos;
+                            ball.destY = yPos;
+                            moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed + 40);
+                        }
+                    }
+                }
+
+                if ((user == "blue")&&(ball.user === user)) {
+                    for (var i = 0; i < unitsBlue.length; i++) {
+                        if ((ball.player === i)&&(distance(unitsBlue[i].Message.Unit.x,xPos,unitsBlue[i].Message.Unit.y,yPos) > ball.speed)) {
+                            ball.player = -1;
+                            ball.destX = xPos;
+                            ball.destY = yPos;
+                            moveObjectToPoint(ball, ball.destX, ball.destY, ball.speed+40);
+                        }
+                    }
+                }
+            }
+            */
+
+            /*
+            connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
+                return console.error(err.toString());
+            });
+            */
+            
+            /*
+            x = mousePos.x;
+            y = mousePos.y;
+            */
+
+
+            /*
+            const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
+            scene.add(redBall);
+            redBall.position.copy(mousePos);
+            */
+
+            animate();
+        };
+
+        function getMousePos() {
             // Update the mouse variable
             event.preventDefault();
             mouse.x = (event.clientX / screenWidth) * 2 - 1;
@@ -130,12 +278,10 @@ const Canvas = () => {
             vector.unproject( camera );
             var dir = vector.sub( camera.position ).normalize();
             var distance = - camera.position.z / dir.z;
-            var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
-          
-            const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
-            scene.add(redBall);
-            redBall.position.copy(pos);
-        };
+            var pos = camera.position.clone().add(dir.multiplyScalar(distance));
+
+            return pos;
+        }
 
         window.addEventListener('mouseup', onMouseClick);
 
