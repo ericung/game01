@@ -46,7 +46,7 @@ const Canvas = () => {
         const LINEDASHSIZE = 0.05;
         const LINEGAPSIZE = 0.05;
 
-        const planeGeometry = new THREE.PlaneGeometry(window.innerHeight, window.innerHeight);
+        const planeGeometry = new THREE.PlaneGeometry(screenWidth, screenHeight);
         const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x90ee90 });
         const plane = new THREE.Mesh(planeGeometry, planeMaterial);
         plane.position.z = -1;
@@ -120,8 +120,8 @@ const Canvas = () => {
 
             // Update the mouse variable
             event.preventDefault();
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            mouse.x = (event.clientX / screenWidth) * 2 - 1;
+            mouse.y = - (event.clientY / screenHeight) * 2 + 1;
 
             // Make the sphere follow the mouse
             var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
@@ -147,6 +147,7 @@ const Canvas = () => {
             renderer.autoClear = false;
             renderer.clear();
             renderer.render(scene, camera);
+
         };
 
         animate();

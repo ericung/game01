@@ -5,7 +5,7 @@ import { InitSignalRConnection } from './Signalr';
 
 function App() {
         return (
-        <div id="page">
+        <div id="maincontent">
             <Canvas />
             <Interface/>
             <InitSignalRConnection />
