@@ -80,7 +80,7 @@ const Canvas = () => {
         lineCenterLine.computeLineDistances();
         scene.add(lineCenterLine);
 
-        const ballGeometry = new THREE.CircleGeometry(0.5);
+        const ballGeometry = new THREE.CircleGeometry(0.25);
         //const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
 
         /*
@@ -110,9 +110,11 @@ const Canvas = () => {
         }
         */
 
+        /*
         const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
         redBall.position.z = -5;
         scene.add(redBall);
+        */
 
         const mouse = { x: 0, y: 0 };
 
@@ -130,6 +132,8 @@ const Canvas = () => {
             var distance = - camera.position.z / dir.z;
             var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
           
+            const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
+            scene.add(redBall);
             redBall.position.copy(pos);
         };
 
