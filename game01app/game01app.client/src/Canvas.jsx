@@ -4,26 +4,36 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 
 const Canvas = () => {
-    const mountRef = useRef(null);
+    const mountRef = useRef(false);
 
-	useEffect (() => {
-        const stats = new Stats();
+    useEffect(() => {
+        if (!mountRef.current) {
+            mountRef.current = true;
+            return () => {
+            };
+        }
+        //const stats = new Stats();
         // document.body.appendChild(stats.dom);
-        const width = 1400;
-        const height = 1000; // Height of the div
         const scene = new THREE.Scene();
         //const camera = new THREE.PerspectiveCamera(100, width / height, 1, 10000 );
-        const camera = new THREE.OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0.01, 100000);
-        camera.setViewOffset(width, height, 0, 0, width, height);
-        camera.position.set(0, 0, 10000);
-        const renderer = new THREE.WebGLRenderer();
-        
-        renderer.setSize(width, height);
-        renderer.setClearColor(0xffffff, 1);
-        mountRef.current.appendChild(renderer.domElement);
+        var screenWidth = window.innerWidth,
+                screenHeight = window.innerHeight,
+                viewAngle = 75,
+                nearDistance = 0.1,
+                farDistance = 1000;
+        //const camera = new THREE.OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0.01, 100000);
+        const camera = new THREE.PerspectiveCamera(viewAngle, screenWidth / 	screenHeight, nearDistance, farDistance);
+        scene.add(camera);
+        camera.position.set(0, 0, 5);
+        camera.lookAt(scene.position);
 
-        camera.lookAt(0, 0, 0);
-        camera.position.set(0, 0, 500);
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(screenWidth, screenHeight);
+        var container = document.getElementById('container');
+        container.appendChild(renderer.domElement); 
 
         /*
         let cameraControls = new OrbitControls( camera, renderer.domElement );
@@ -33,10 +43,10 @@ const Canvas = () => {
         cameraControls.update();
         */
 
-        const LINEDASHSIZE = 0.09;
-        const LINEGAPSIZE = 0.09;
-        
-        const planeGeometry = new THREE.PlaneGeometry(width, height);
+        const LINEDASHSIZE = 0.05;
+        const LINEGAPSIZE = 0.05;
+
+        const planeGeometry = new THREE.PlaneGeometry(window.innerHeight, window.innerHeight);
         const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x90ee90 });
         const plane = new THREE.Mesh(planeGeometry, planeMaterial);
         plane.position.z = -1;
@@ -45,8 +55,8 @@ const Canvas = () => {
 
         const materialRedLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
         const pointsRedLine = [];
-        pointsRedLine.push(new THREE.Vector3(-1400, 300, 0));
-        pointsRedLine.push(new THREE.Vector3(1400, 300, 0));
+        pointsRedLine.push(new THREE.Vector3(-10, 3, 0));
+        pointsRedLine.push(new THREE.Vector3(10, 3, 0));
         const geometryRedLine = new THREE.BufferGeometry().setFromPoints(pointsRedLine);
         const line = new THREE.Line(geometryRedLine, materialRedLine);
         line.computeLineDistances();
@@ -54,8 +64,8 @@ const Canvas = () => {
 
         const materialBlueLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
         const pointsBlueLine = [];
-        pointsBlueLine.push(new THREE.Vector3(-1400, -300, 0));
-        pointsBlueLine.push(new THREE.Vector3(1400, -300, 0));
+        pointsBlueLine.push(new THREE.Vector3(-10, -3, 0));
+        pointsBlueLine.push(new THREE.Vector3(10, -3, 0));
         const geometryBlueLine = new THREE.BufferGeometry().setFromPoints(pointsBlueLine);
         const lineBlueLine = new THREE.Line(geometryBlueLine, materialBlueLine);
         lineBlueLine.computeLineDistances();
@@ -63,24 +73,30 @@ const Canvas = () => {
 
         const materialCenterLine = new THREE.LineDashedMaterial({ color: 0x000000, dashSize: LINEDASHSIZE, gapSize: LINEGAPSIZE });
         const pointsCenterLine = [];
-        pointsCenterLine.push(new THREE.Vector3(-1400, 0, 0));
-        pointsCenterLine.push(new THREE.Vector3(1400, 0, 0));
+        pointsCenterLine.push(new THREE.Vector3(-10, 0, 0));
+        pointsCenterLine.push(new THREE.Vector3(10, 0, 0));
         const geometryCenterLine = new THREE.BufferGeometry().setFromPoints(pointsCenterLine);
         const lineCenterLine = new THREE.Line(geometryCenterLine, materialCenterLine);
         lineCenterLine.computeLineDistances();
         scene.add(lineCenterLine);
 
-        const ballGeometry = new THREE.CircleGeometry(25, 32);
-        const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
+        const ballGeometry = new THREE.CircleGeometry(0.5);
+        //const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
+
+        /*
         const ball = new THREE.Mesh(ballGeometry, ballMaterial);
         scene.add(ball);
+        */
 
         const unitRedMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-        const raycaster = new THREE.Raycaster();
+        /*
+        //const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
-        raycaster.setFromCamera(mouse, camera);
+        //raycaster.setFromCamera(mouse, camera);
+        */
 
+        /*
         function onMouseClick(event) {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -92,28 +108,67 @@ const Canvas = () => {
                 scene.add(redBall);
             }
         }
+        */
+
+        const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
+        redBall.position.z = -5;
+        scene.add(redBall);
+
+        const mouse = { x: 0, y: 0 };
+
+        function onMouseClick(event) {
+
+            // Update the mouse variable
+            event.preventDefault();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+            // Make the sphere follow the mouse
+            var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+            vector.unproject( camera );
+            var dir = vector.sub( camera.position ).normalize();
+            var distance = - camera.position.z / dir.z;
+            var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+          
+            redBall.position.copy(pos);
+        };
 
         window.addEventListener('mouseup', onMouseClick);
 
-		const animate = function() {
-            stats.begin();
+        function animate() {
 			requestAnimationFrame(animate);
-			renderer.render(scene, camera);
-            stats.end();
-		}
+			render(scene, camera);
+        }
 
+        // Rendering function
+        function render() {
+
+            // For rendering
+            renderer.autoClear = false;
+            renderer.clear();
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        /*
         setInterval(() => {
             animate();
         }, 1000 / 60);
+        */
 
         return () => {
-            mountRef.current.removeChild(renderer.domElement);
+            /*mountRef.current.removeChild(renderer.domElement);*/
         }
     }, []);
 
-    return (
-        <div id="maincontent" ref={mountRef} ></div>
-    );
+    if (!mountRef.current) {
+        return (
+            <div id="maincontent" >
+                <div id="container" ></div>
+            </div>
+        );
+    }
 }
 
 export default Canvas;

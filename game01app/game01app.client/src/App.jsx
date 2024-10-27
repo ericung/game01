@@ -7,7 +7,7 @@ function App() {
         return (
         <div id="page">
             <Canvas />
-            <Interface />
+            <Interface/>
             <InitSignalRConnection />
         </div>
     );
