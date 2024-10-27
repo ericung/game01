@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { InitSignalRConnection } from './Signalr';
 
 const Canvas = () => {
     const mountRef = useRef(false);
@@ -93,6 +94,7 @@ const Canvas = () => {
         /*
         //const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
+import { InitSignalRConnection } from './Signalr';
         //raycaster.setFromCamera(mouse, camera);
         */
 
@@ -115,8 +117,10 @@ const Canvas = () => {
         redBall.position.z = -5;
         scene.add(redBall);
         */
+        
         // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         // let connected = false;
+        const connection = InitSignalRConnection();
         let user = "red";
         // let connectionId;
 
@@ -202,7 +206,6 @@ const Canvas = () => {
                 const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
                 scene.add(redBall);
                 redBall.position.copy(mousePos);
-                console.log("y: " + mousePos.y);
                 // evt.preventDefault();
             }
 
