@@ -1,23 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import * as signalR from '@microsoft/signalr'
+import React, { useEffect, useState, useRef } from 'react';
+import { SignalRConnection } from './Signalr';
 
 const URL = "https://localhost:7276/messageHub";
 
 const Interface = () => {
     const [connection, setConnection] = useState(null);
 
+    const mountRef = useRef(false);
+
     useEffect(() => {
-        const conn = new signalR.HubConnectionBuilder()
-            .withUrl(URL, {
-                skipNegotiation: true,
-                transport: signalR.HttpTransportType.WebSockets
-            })
-            .withAutomaticReconnect()
-            .build();
+        const signalr = SignalRConnection().WaitForConnection();
+        setConnection(SignalRConnection().connection);
 
-        setConnection(conn);
-
-        conn.start().catch(err => console.error("Connection failed: ", err));
+        // connection.start().catch(err => console.error("Connection failed: ", err));
 
         return () => {
             //conn.stop();
@@ -37,7 +32,7 @@ const Interface = () => {
                     <br/>
                     <b>Group</b>
                     <input id="group" name="group"/>
-                    {/*<input type="button" value="Create" onClick="createGroup()" />*/}
+                    {/*<input type="button" value="Create" onClick={connection.createGroup()} />*/}
                     <br />
                     <b>Group List</b>
                     {/*<select id="groupList" onChange="changeGroups()">

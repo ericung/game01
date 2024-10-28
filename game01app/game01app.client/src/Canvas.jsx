@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { InitSignalRConnection } from './Signalr';
+import { SignalRConnection } from './Signalr';
 
 const Canvas = () => {
     const mountRef = useRef(false);
@@ -120,7 +120,7 @@ import { InitSignalRConnection } from './Signalr';
         
         // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         // let connected = false;
-        const connection = InitSignalRConnection();
+        const connection = SignalRConnection();
         let user = "red";
         // let connectionId;
 
@@ -139,7 +139,7 @@ import { InitSignalRConnection } from './Signalr';
             var yPos = mousePos.y;
             //var radius = Math.pow(40, 2);
             var pushUnit = true;
-            var units = document.getElementById("units").value;
+            // var units = document.getElementById("units").value;
 
             for (let i = 0; i < unitsRed.length; i++) {
                 /*
@@ -259,7 +259,6 @@ import { InitSignalRConnection } from './Signalr';
             x = mousePos.x;
             y = mousePos.y;
             */
-
 
             /*
             const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
