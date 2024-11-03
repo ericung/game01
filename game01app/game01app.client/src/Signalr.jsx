@@ -1,34 +1,114 @@
-import * as signalR from '@microsoft/signalr'
+import {
+  JsonHubProtocol,
+  // HubConnection,
+  HubConnectionState,
+  HubConnectionBuilder,
+  LogLevel,
+  // IHttpConnectionOptions,
+  HttpTransportType
+} from '@microsoft/signalr';
+
+// import store from '@/app/store';
+
+// let connectionId;
 
 const URL = "https://localhost:7276/messageHub";
 
-export const SignalRConnection = () => {
-    let connection;
-    let connectionId;
-    let connected = false;
+const isDev = process.env.NODE_ENV === 'development';
 
-    connection = new signalR.HubConnectionBuilder()
-        .withUrl(URL, {
-            skipNegotiation: true,
-            transport: signalR.HttpTransportType.WebSockets
-        })
+let connected = false;
+
+/*
+const getToken = (): string => {
+  const state = store.getState();
+  return state.app.token!;
+}
+*/
+
+/*
+async function createGroup() {
+    var input = document.getElementById("group");
+    var newGroup = input.value;
+
+    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
+    });
+
+    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
+        return console.error(err.toString());
+    });
+}
+*/
+
+const startSignalRConnection = async (connection) => {
+    try {
+        if (connected === false) {
+            await connection.start().then(function () {
+                connected = true;
+            }).catch(function () {
+                return "";
+            });
+        }
+        // console.assert(connection.state === HubConnectionState.Connected);
+        console.log('SignalR connection established', connection.baseUrl);
+    } catch (err) {
+        // console.assert(connection.state === HubConnectionState.Disconnected);
+        console.error('SignalR Connection Error: ', err);
+        setTimeout(() => startSignalRConnection(connection), 5000);
+    }
+};
+
+export const SignalRConnection = async () => {
+    // let connected = false;
+
+    const options = {
+        logMessageContent: isDev,
+        logger: isDev ? LogLevel.Warning : LogLevel.Error,
+        skipNegotiation: true,
+        transport: HttpTransportType.WebSockets
+        // accessTokenFactory: () => getToken()
+    };
+
+    const connection = new HubConnectionBuilder()
+        .withUrl(URL, options)
         .withAutomaticReconnect()
+        .withHubProtocol(new JsonHubProtocol())
+        .configureLogging(LogLevel.Information)
         .build();
 
-    // REGION: GroupActions
-    async function createGroup() {
-        var input = document.getElementById("group");
-        var newGroup = input.value;
+    connection.serverTimeoutInMilliseconds = 60000;
+    connection.keepAliveIntervalInMilliseconds = 15000;
 
-        await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
-            return console.error(err.toString());
-        });
+    // re-establish the connection if connection dropped
+    /*
+    connection.onclose(error => {
+    // console.assert(connection.state === HubConnectionState.Disconnected);
+    if (!!error) {
+      // console.log('SignalR: connection was closed due to error.', error);
+    } else {
+      // console.log('SignalR: connection was closed.');
     }
+    });
+    */
 
+    /*
+    connection.onreconnecting(error => {
+    console.assert(connection.state === HubConnectionState.Reconnecting);
+    console.log('SignalR: connection lost due. Reconnecting...', error);
+    });
+    */
+
+    /*
+    connection.onreconnected(connectionId => {
+    console.assert(connection.state === HubConnectionState.Connected);
+    console.log('SignalR: connection reestablished. Connected with connectionId', connectionId);
+    });
+    */
+
+    await startSignalRConnection(connection);
+
+    // REGION: GroupActions
+
+    /*
     async function refreshGroups() {
         await connection.invoke("GetGroups", connectionId).catch(function (err) {
             return console.error(err.toString());
@@ -47,15 +127,19 @@ export const SignalRConnection = () => {
             return console.error(err.toString());
         });
     }
-    
+    */
+
     // ENDREGION: GroupActions
+    /*
     connection.start().then(function () {
-        connected = true;
+        //connected = true;
     }).catch(function (err) {
         console.error("Connection failed: ", err)
         return "";
     });
+    */
 
+    /*
     connection.on("ReceiveMessage", function (user, message) {
         if (message.Message.Blue !== undefined) {
             // unitsBlue = message.Message.Blue;
@@ -85,7 +169,7 @@ export const SignalRConnection = () => {
     });
 
     connection.on("JoinedGroup", async function (userInfo) {
-        document.getElementById("user").value = userInfo.userName; 
+        document.getElementById("user").value = userInfo.userName;
         document.getElementById("group").value = userInfo.group;
         // user = userInfo.userName;
         // await refreshGroups();
@@ -105,7 +189,9 @@ export const SignalRConnection = () => {
             options[options.length] = new Option(groupList[i], groupList[i]);
         }
     });
+    */
 
+    /*
     async function WaitForConnection() {
         while (true) {
             if (connected) {
@@ -116,9 +202,8 @@ export const SignalRConnection = () => {
             }
         }
     }
+    */
+
+    return connection;
 };
-
-
-
-
 

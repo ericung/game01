@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+/*
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+*/
 import { SignalRConnection } from './Signalr';
 
 const Canvas = () => {
-    const mountRef = useRef(false);
+    const mountRef = useRef(null);
 
     useEffect(() => {
         if (!mountRef.current) {
@@ -13,6 +15,7 @@ const Canvas = () => {
             return () => {
             };
         }
+
         //const stats = new Stats();
         // document.body.appendChild(stats.dom);
         const scene = new THREE.Scene();
@@ -94,7 +97,7 @@ const Canvas = () => {
         /*
         //const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
-import { InitSignalRConnection } from './Signalr';
+        import { InitSignalRConnection } from './Signalr';
         //raycaster.setFromCamera(mouse, camera);
         */
 
@@ -120,7 +123,7 @@ import { InitSignalRConnection } from './Signalr';
         
         // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         // let connected = false;
-        const connection = SignalRConnection();
+        //const connection = SignalRConnection();
         let user = "red";
         // let connectionId;
 
