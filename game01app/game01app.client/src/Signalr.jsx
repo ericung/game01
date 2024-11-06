@@ -30,18 +30,6 @@ const getToken = (): string => {
 }
 */
 
-async function createGroup() {
-    var input = document.getElementById("group");
-    var newGroup = input.value;
-
-    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
-    });
-
-    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
-        return console.error(err.toString());
-    });
-}
-
 const startSignalRConnection = async (connection) => {
     try {
         if (connected === false) {
@@ -111,6 +99,8 @@ export const SignalRConnection = async () => {
 
     // REGION: GroupActions
 
+    
+
     /*
     async function refreshGroups() {
         await connection.invoke("GetGroups", connectionId).catch(function (err) {
@@ -170,14 +160,19 @@ export const SignalRConnection = async () => {
         //datalist.appendChild(newOption);
     });
 
-    /*
     connection.on("JoinedGroup", async function (userInfo) {
+        //connection.user = userInfo.connection.userName;
+        connection.group = userInfo.group;
+
+        /*
         document.getElementById("user").value = userInfo.userName;
         document.getElementById("group").value = userInfo.group;
+        */
         // user = userInfo.userName;
         // await refreshGroups();
     });
 
+    /*
     connection.on("RemovedGroup", function (userInfo) {
         document.getElementById("group").value = userInfo.group;
         // user = userInfo.userName;

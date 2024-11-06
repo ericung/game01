@@ -1,4 +1,5 @@
 using Hubs;
+using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +9,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
-
+//builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    hubOptions.EnableDetailedErrors = true;
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -40,14 +46,18 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapFallbackToFile("/index.html");
+// app.MapFallbackToFile("/index.html");
 
+/*
 app.UseEndpoints(endpoints =>
 {
     _ = endpoints.MapControllers();
     _ = endpoints.MapHub<ConnectionHub>("/messageHub");
 });
 
+*/
+
+app.MapHub<ConnectionHub>("messageHub");
 
 app.MapControllerRoute(
     name: "default",
