@@ -15,7 +15,7 @@ import {
 
 const URL = "https://localhost:7276/messageHub";
 
-const isDev = process.env.NODE_ENV === 'development';
+// const isDev = process.env.NODE_ENV === 'development';
 
 let connection;
 
@@ -52,8 +52,8 @@ export const SignalRConnection = async () => {
     // let connected = false;
 
     const options = {
-        logMessageContent: isDev,
-        logger: isDev ? LogLevel.Warning : LogLevel.Error,
+        //logMessageContent: isDev,
+        logger: LogLevel.Warning,/*LogLevel.Error,*/
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets
         // accessTokenFactory: () => getToken()

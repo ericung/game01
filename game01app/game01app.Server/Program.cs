@@ -32,7 +32,7 @@ var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-app.UseRouting();
+// app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
@@ -58,6 +58,8 @@ app.UseEndpoints(endpoints =>
 */
 
 app.MapHub<ConnectionHub>("messageHub");
+
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",

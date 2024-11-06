@@ -1,4 +1,4 @@
-using game01webapp.Models;
+using game01app.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;

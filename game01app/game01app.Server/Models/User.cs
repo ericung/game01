@@ -1,4 +1,4 @@
-﻿namespace game01webapp.Models
+﻿namespace game01app.Models
 {
     public class User
     {
