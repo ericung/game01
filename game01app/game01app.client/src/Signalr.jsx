@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   JsonHubProtocol,
   // HubConnection,
@@ -16,6 +17,10 @@ const URL = "https://localhost:7276/messageHub";
 
 const isDev = process.env.NODE_ENV === 'development';
 
+let connection;
+
+let connectionId;
+
 let connected = false;
 
 /*
@@ -25,7 +30,6 @@ const getToken = (): string => {
 }
 */
 
-/*
 async function createGroup() {
     var input = document.getElementById("group");
     var newGroup = input.value;
@@ -37,7 +41,6 @@ async function createGroup() {
         return console.error(err.toString());
     });
 }
-*/
 
 const startSignalRConnection = async (connection) => {
     try {
@@ -156,18 +159,18 @@ export const SignalRConnection = async () => {
         // send draw event
         // draw()
     });
+    */
 
     connection.on("Connected", function (userInfo) {
-        connectionId = userInfo.connectionId;
-        var datalist = document.getElementById("networks");
-        var newOption = document.createElement("option");
+        connection.id = userInfo.connectionId;
+        // var datalist = document.getElementById("networks");
+        // var newOption = document.createElement("option");
 
-        newOption.value = connectionId;
-        datalist.appendChild(newOption);
-        // user = userInfo.userName;
-        // document.getElementById("user").value = user;
+        //newOption.value = connectionId;
+        //datalist.appendChild(newOption);
     });
 
+    /*
     connection.on("JoinedGroup", async function (userInfo) {
         document.getElementById("user").value = userInfo.userName;
         document.getElementById("group").value = userInfo.group;

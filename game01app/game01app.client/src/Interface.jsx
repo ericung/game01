@@ -5,6 +5,7 @@ import { SignalRConnection } from './Signalr';
 
 const Interface = () => {
     const [connection, setConnection] = useState(null);
+    const [user /*, setUser*/] = useState("red");
     const mountRef = useRef(false);
 
     useEffect(() => {
@@ -12,27 +13,34 @@ const Interface = () => {
             const getConnection = async () => {
                 const connection = await SignalRConnection();
                 setConnection(connection);
+
+                await connection.invoke("Connect").catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+                setConnection(connection);
+                document.getElementById("connection").value = connection.id;
             };
 
             getConnection();
-
-            mountRef.current = true;
             return () => {
+                mountRef.current = true;
             };
         }
-
         
         return () => {
             //conn.stop();
         }
     }, [connection]);
-    if (!mountRef.current) {
+    if (mountRef.current) {
         return (
             <>
                 <div id="menuleftcontent">
                     <form>
+                        <b>Connection</b>
+                        <input id="connection" value={ connection.id } disabled/>
                         <b>User</b>
-                        {/*<input id="user" value="@Model.User" disabled/>*/}
+                        <input id="user" value={ user } disabled/>
                         <br />
                         <b>Network</b>
                         <input list="networks" id="network" name="network" />

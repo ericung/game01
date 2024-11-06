@@ -123,7 +123,7 @@ const Canvas = () => {
         
         // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         // let connected = false;
-        //const connection = SignalRConnection();
+        // const connection = SignalRConnection();
         let user = "red";
         // let connectionId;
 
