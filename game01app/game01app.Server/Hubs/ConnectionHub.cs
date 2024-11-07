@@ -101,7 +101,6 @@ namespace Hubs
             return base.OnConnectedAsync();
         }
 
-
         public override Task OnDisconnectedAsync(Exception? exception)
         {
             /*

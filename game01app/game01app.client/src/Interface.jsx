@@ -67,11 +67,9 @@ const Interface = () => {
 
         var newGroup = input.value;
 
-        /*
         await connection.invoke("LeaveGroup", connection.id).catch(function (err) {
             return console.error(err.toString());
         });
-        */
 
         try {
             await connection.invoke("JoinGroup", connection.id === null ? "" : connection.id, newGroup).catch(function (err) {
@@ -83,6 +81,35 @@ const Interface = () => {
         }
 
         setConnection(connection);
+    }
+
+    async function refreshGroups() {
+        try {
+            await connection.invoke("GetGroups", connection.id).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+        catch (error) {
+            console.log(error.toString());
+        }
+    }
+
+    async function changeGroups() {
+        try {
+            document.getElementById("group").value = document.getElementById("groupList").value;
+            let newGroup = document.getElementById("groupList").value;
+
+            await connection.invoke("LeaveGroup", connection.id).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            await connection.invoke("JoinGroup", connection.id, newGroup).catch(function (err) {
+                return console.error(err.toString());
+            });
+        }
+        catch (error) {
+            console.log(error.toString());
+        }
     }
 
     if (mountRef.current) {
@@ -104,9 +131,9 @@ const Interface = () => {
                         <input type="button" value="Create" onClick={createGroup} />
                         <br />
                         <b>Group List</b>
-                        {/*<select id="groupList" onChange="changeGroups()"></select>*/}
+                        <select id="groupList" onChange={changeGroups}></select>
                         <br />
-                        {/*<input type="button" value="Refresh Groups" onClick="refreshGroups()"/>*/}
+                        <input type="button" value="Refresh Groups" onClick={refreshGroups}/>
                         <br />
                         <b>Units</b>
                         <input type="text" id="units" />

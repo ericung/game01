@@ -99,8 +99,6 @@ export const SignalRConnection = async () => {
 
     // REGION: GroupActions
 
-    
-
     /*
     async function refreshGroups() {
         await connection.invoke("GetGroups", connectionId).catch(function (err) {
@@ -172,22 +170,22 @@ export const SignalRConnection = async () => {
         // await refreshGroups();
     });
 
-    /*
     connection.on("RemovedGroup", function (userInfo) {
         document.getElementById("group").value = userInfo.group;
         // user = userInfo.userName;
     });
 
     connection.on("SendGroupList", function (groupList) {
-        // $("#groupList").empty();
         var groups = document.getElementById("groupList");
+        while (groups.options.length) {
+            groups.remove(0);
+        }
         var options = groups.options;
         options[0] = new Option("", "");
         for (let i = 0; i < groupList.length; i++) {
             options[options.length] = new Option(groupList[i], groupList[i]);
         }
     });
-    */
 
     /*
     async function WaitForConnection() {
