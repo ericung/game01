@@ -1,36 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { SignalRConnection } from './Signalr';
 
-// const URL = "https://localhost:7276/messageHub";
-
-// REGION: GroupActions
-
-/*
-async function refreshGroups() {
-    await connection.invoke("GetGroups", connectionId).catch(function (err) {
-        return console.error(err.toString());
-    });
-}
-
-async function changeGroups() {
-    document.getElementById("group").value = document.getElementById("groupList").value;
-    let newGroup = document.getElementById("groupList").value;
-
-    await connection.invoke("LeaveGroup", connectionId).catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    await connection.invoke("JoinGroup", connectionId, newGroup).catch(function (err) {
-        return console.error(err.toString());
-    });
-}
-*/
-
-// ENDREGION: GroupActions
-
 const Interface = () => {
     const [connection, setConnection] = useState(null);
-    const [user /*, setUser*/] = useState("red");
+    const [user , setUser] = useState("red");
     const mountRef = useRef(false);
 
     useEffect(() => {
@@ -44,7 +17,7 @@ const Interface = () => {
                 });
 
                 setConnection(connection);
-                document.getElementById("connection").value = connection.id;
+                document.getElementById("network").value = connection.id;
             };
 
             getConnection();
@@ -58,6 +31,8 @@ const Interface = () => {
         }
     }, [connection]);
 
+    // REGION: GroupActions
+
     async function createGroup() {
         var input = document.getElementById("group");
 
@@ -67,20 +42,25 @@ const Interface = () => {
 
         var newGroup = input.value;
 
-        await connection.invoke("LeaveGroup", connection.id).catch(function (err) {
-            return console.error(err.toString());
-        });
-
         try {
+            await connection.invoke("LeaveGroup", connection.id).catch(function (err) {
+                return console.error(err.toString());
+            });
+
             await connection.invoke("JoinGroup", connection.id === null ? "" : connection.id, newGroup).catch(function (err) {
                 return console.error(err.toString());
             });
+
+            setConnection(connection);
+
+            await connection.invoke("GetGroups", connection.id).catch(function (err) {
+                return console.error(err.toString());
+            });
+
         }
         catch (error) {
             console.log(error.toString());
         }
-
-        setConnection(connection);
     }
 
     async function refreshGroups() {
@@ -88,6 +68,8 @@ const Interface = () => {
             await connection.invoke("GetGroups", connection.id).catch(function (err) {
                 return console.error(err.toString());
             });
+
+            setConnection(connection);
         }
         catch (error) {
             console.log(error.toString());
@@ -106,19 +88,27 @@ const Interface = () => {
             await connection.invoke("JoinGroup", connection.id, newGroup).catch(function (err) {
                 return console.error(err.toString());
             });
+
+            setConnection(connection);
+            setConnection(connection);
+            setUser(connection.user);
+
+            await connection.invoke("GetGroups", connection.id).catch(function (err) {
+                return console.error(err.toString());
+            });
         }
         catch (error) {
             console.log(error.toString());
         }
     }
 
+    // ENDREGION: GroupActions
+
     if (mountRef.current) {
         return (
             <>
                 <div id="menuleftcontent">
                     <form>
-                        <b>Connection</b>
-                        <input id="connection" value="id" disabled/>
                         <b>User</b>
                         <input id="user" value={ user } disabled/>
                         <br />
