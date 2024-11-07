@@ -90,7 +90,6 @@ const Interface = () => {
             });
 
             setConnection(connection);
-            setConnection(connection);
             setUser(connection.user);
 
             await connection.invoke("GetGroups", connection.id).catch(function (err) {
