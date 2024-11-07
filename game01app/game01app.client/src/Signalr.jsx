@@ -1,34 +1,13 @@
-/* eslint-disable no-unused-vars */
 import {
   JsonHubProtocol,
-  // HubConnection,
-  HubConnectionState,
   HubConnectionBuilder,
   LogLevel,
-  // IHttpConnectionOptions,
   HttpTransportType
 } from '@microsoft/signalr';
 
-// import store from '@/app/store';
-
-// let connectionId;
-
 const URL = "https://localhost:7276/messageHub";
 
-// const isDev = process.env.NODE_ENV === 'development';
-
-let connection;
-
-let connectionId;
-
 let connected = false;
-
-/*
-const getToken = (): string => {
-  const state = store.getState();
-  return state.app.token!;
-}
-*/
 
 const startSignalRConnection = async (connection) => {
     try {
@@ -39,22 +18,18 @@ const startSignalRConnection = async (connection) => {
                 return "";
             });
         }
-        // console.log('SignalR connection established', connection.baseUrl);
     } catch (err) {
-        // console.error('SignalR Connection Error: ', err);
+        console.log(err.toString());
         setTimeout(() => startSignalRConnection(connection), 5000);
     }
 };
 
 export const SignalRConnection = async () => {
-    // let connected = false;
 
     const options = {
-        //logMessageContent: isDev,
         logger: LogLevel.Warning,/*LogLevel.Error,*/
         skipNegotiation: true,
         transport: HttpTransportType.WebSockets
-        // accessTokenFactory: () => getToken()
     };
 
     const connection = new HubConnectionBuilder()
@@ -88,28 +63,15 @@ export const SignalRConnection = async () => {
 
     connection.on("Connected", function (userInfo) {
         connection.id = userInfo.connectionId;
-        // var datalist = document.getElementById("networks");
-        // var newOption = document.createElement("option");
-
-        //newOption.value = connectionId;
-        //datalist.appendChild(newOption);
     });
 
     connection.on("JoinedGroup", async function (userInfo) {
         connection.user = userInfo.userName;
         connection.group = userInfo.group;
 
-        /*
-        document.getElementById("user").value = userInfo.userName;
-        document.getElementById("group").value = userInfo.group;
-        */
-        // user = userInfo.userName;
-        // await refreshGroups();
     });
 
-    connection.on("RemovedGroup", function (userInfo) {
-        document.getElementById("group").value = userInfo.group;
-        // user = userInfo.userName;
+    connection.on("RemovedGroup", function () {
     });
 
     connection.on("SendGroupList", function (groupList) {
@@ -123,19 +85,6 @@ export const SignalRConnection = async () => {
             options[options.length] = new Option(groupList[i], groupList[i]);
         }
     });
-
-    /*
-    async function WaitForConnection() {
-        while (true) {
-            if (connected) {
-                return;
-            }
-            else {
-                await new Promise(resolve => setTimeout(resolve, 200));
-            }
-        }
-    }
-    */
 
     return connection;
 };
