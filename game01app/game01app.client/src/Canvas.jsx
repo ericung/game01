@@ -1,12 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useContext, useRef } from 'react';
+import PropTypes from 'prop-types';
 import * as THREE from 'three';
+import { Context } from "./Context";
 /*
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-*/
 import { SignalRConnection } from './Signalr';
+*/
 
 const Canvas = () => {
+    const { connection, setConnection, user, setUser } = useContext(Context);
     const mountRef = useRef(null);
 
     useEffect(() => {
@@ -124,7 +127,7 @@ const Canvas = () => {
         // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         // let connected = false;
         // const connection = SignalRConnection();
-        let user = "red";
+        //let user = "red";
         // let connectionId;
 
         const mouse = { x: 0, y: 0 };
@@ -142,11 +145,10 @@ const Canvas = () => {
             var yPos = mousePos.y;
             //var radius = Math.pow(40, 2);
             var pushUnit = true;
-            // var units = document.getElementById("units").value;
+            var units = document.getElementById("units").value;
 
             for (let i = 0; i < unitsRed.length; i++) {
-                /*
-                if ((distance(unitsRed[i].Message.Unit.x, x, unitsRed[i].Message.Unit.y, y) < 20) && (pushUnit)) {
+                if ((distance(unitsRed[i].Message.Unit.x, xPos, unitsRed[i].Message.Unit.y, yPos) < 0.43) && (pushUnit)) {
                     pushUnit = false;
 
                     if (user == "red") {
@@ -157,7 +159,6 @@ const Canvas = () => {
                         }
                     }
                 }
-                */
             }
 
             /*
@@ -173,9 +174,8 @@ const Canvas = () => {
             }
             */
 
-            /*
             for (let i = 0; i < unitsBlue.length; i++) {
-                if ((distance(unitsBlue[i].Message.Unit.x, x, unitsBlue[i].Message.Unit.y, y) < 20) && (pushUnit)) {
+                if ((distance(unitsBlue[i].Message.Unit.x, xPos, unitsBlue[i].Message.Unit.y, yPos) < 0.43) && (pushUnit)) {
                     pushUnit = false;
 
                     if (user == "blue") {
@@ -187,7 +187,6 @@ const Canvas = () => {
                     }
                 }
             }
-            */
 
             /*
             for (let i = 0; i < unitsBlue.length; i++) {
@@ -202,24 +201,20 @@ const Canvas = () => {
             }
             */
             
-            if ((user == "red") && (mousePos.y <= 2.95) && (mousePos.y >= .05)/*&& (pushUnit) && (unitsRed.length < units)*/)
+            if ((user == "red") && (mousePos.y <= 2.95) && (mousePos.y >= .05) && (pushUnit) && (unitsRed.length < units))
             {
-                //unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsRed.length } } });
-
+                unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsRed.length } } });
                 const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
                 scene.add(redBall);
                 redBall.position.copy(mousePos);
-                // evt.preventDefault();
             }
 
-            if ((user == "blue") && (mousePos.y >= -2.95) &&(mousePos.y <= -0.05)/*&& (pushUnit) && (unitsBlue.length < units)*/)
+            if ((user == "blue") && (mousePos.y >= -2.95) &&(mousePos.y <= -0.05) && (pushUnit) && (unitsBlue.length < units))
             {
-                //unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsBlue.length } } });
+                unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsBlue.length } } });
                 const blueBall = new THREE.Mesh(ballGeometry, unitBlueMaterial);
                 scene.add(blueBall);
                 blueBall.position.copy(mousePos);
-
-                // evt.preventDefault();
             }
 
             /*
@@ -326,6 +321,12 @@ const Canvas = () => {
         );
     }
 }
+
+Canvas.propTypes = {
+    connection: PropTypes.object,
+    user: PropTypes.string
+}
+
 
 export default Canvas;
 

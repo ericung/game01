@@ -1,17 +1,10 @@
 {
   "dependencies": {
-    "secrets1": {
-      "type": "secrets",
-      "dynamicId": null
-    },
     "signalr1": {
+      "ignored": "true",
       "type": "signalr",
       "connectionId": "Azure:SignalR:ConnectionString",
       "dynamicId": null
-    },
-    "compute.appService1": {
-      "group": "connections",
-      "type": "compute.appService"
     }
   }
 }

@@ -46,15 +46,15 @@ export const SignalRConnection = async () => {
 
     connection.on("ReceiveMessage", function (user, message) {
         if (message.Message.Blue !== undefined) {
-            // unitsBlue = message.Message.Blue;
+            connection.unitsBlue = message.Message.Blue;
         }
 
         if (message.Message.Red !== undefined) {
-            // unitsRed = message.Message.Red;
+            connection.unitsRed = message.Message.Red;
         }
 
         if (message.Message.Ball !== undefined) {
-            // ball = message.Message.Ball;
+            connection.ball = message.Message.Ball;
         }
 
         // send draw event

@@ -1,13 +1,18 @@
+import React, { useEffect, useRef } from 'react';
 import './App.css';
 import Interface from './Interface';
 import Canvas from './Canvas';
+import ContextProvider from './Context';
 
 function App() {
-        return (
-        <div id="maincontent">
-            <Canvas />
-            <Interface />
-        </div>
+
+    return (
+        <ContextProvider>
+            <div id="maincontent">
+                <Canvas/>
+                <Interface/>
+            </div>
+        </ContextProvider>
     );
 }
 

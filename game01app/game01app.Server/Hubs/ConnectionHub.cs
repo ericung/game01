@@ -28,7 +28,7 @@ namespace Hubs
                         ConnectionMap[connectionId].UserName = "blue";
                         break;
                     default:
-                        ConnectionMap[connectionId].UserName = "";
+                        ConnectionMap[connectionId].UserName = "spectator";
                         break;
                 }
 

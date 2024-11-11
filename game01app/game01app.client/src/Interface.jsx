@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useContext, useRef } from 'react';
 import { SignalRConnection } from './Signalr';
+import { Context } from "./Context";
 
 const Interface = () => {
-    const [connection, setConnection] = useState(null);
-    const [user , setUser] = useState("red");
+    const { connection, setConnection, user, setUser } = useContext(Context);
     const mountRef = useRef(false);
 
     useEffect(() => {
@@ -29,7 +29,7 @@ const Interface = () => {
         return () => {
             //conn.stop();
         }
-    }, [connection]);
+    });
 
     // REGION: GroupActions
 
@@ -106,27 +106,29 @@ const Interface = () => {
     if (mountRef.current) {
         return (
             <>
-                <div id="menuleftcontent">
-                    <form>
-                        <b>User</b>
-                        <input id="user" value={ user } disabled/>
-                        <br />
-                        <b>Network</b>
-                        <input list="networks" id="network" name="network" />
-                        <datalist id="networks"></datalist>
-                        <br />
-                        <b>Group</b>
-                        <input id="group" name="group" />
-                        <input type="button" value="Create" onClick={createGroup} />
-                        <br />
-                        <b>Group List</b>
-                        <select id="groupList" onChange={changeGroups}></select>
-                        <br />
-                        <input type="button" value="Refresh Groups" onClick={refreshGroups}/>
-                        <br />
-                        <b>Units</b>
-                        <input type="text" id="units" />
-                    </form>
+                <div>
+                    <div id="menuleftcontent">
+                        <form>
+                            <b>User</b>
+                            <input id="user" value={ user } disabled/>
+                            <br />
+                            <b>Network</b>
+                            <input list="networks" id="network" name="network" />
+                            <datalist id="networks"></datalist>
+                            <br />
+                            <b>Group</b>
+                            <input id="group" name="group" />
+                            <input type="button" value="Create" onClick={createGroup} />
+                            <br />
+                            <b>Group List</b>
+                            <select id="groupList" onChange={changeGroups}></select>
+                            <br />
+                            <input type="button" value="Refresh Groups" onClick={refreshGroups}/>
+                            <br />
+                            <b>Units</b>
+                            <input type="text" id="units" />
+                        </form>
+                    </div>
                 </div>
             </>
         )
