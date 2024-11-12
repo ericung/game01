@@ -1,22 +1,30 @@
-import React, { useEffect, useContext, useRef } from 'react';
+import { useEffect, useContext, useRef } from 'react';
+import * as signalR from "@microsoft/signalr";
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { Context } from "./Context";
+import signalRConnection from "./Signalr";
 /*
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { SignalRConnection } from './Signalr';
 */
 
 const Canvas = () => {
-    const { connection, setConnection, user, setUser } = useContext(Context);
-    const mountRef = useRef(null);
+    const { connection, setConnection, user /*, setUser*/ } = useContext(Context);
+    const mountRef = useRef(false);
 
     useEffect(() => {
         if (!mountRef.current) {
             mountRef.current = true;
             return () => {
+                <>
+                </>
             };
+        }
+
+        if ((!connection) || (connection.state !== signalR.HubConnectionState.Connected)) {
+            signalRConnection.startSignalRConnection();
+            setConnection(signalRConnection.connection);
         }
 
         //const stats = new Stats();
@@ -24,12 +32,12 @@ const Canvas = () => {
         const scene = new THREE.Scene();
         //const camera = new THREE.PerspectiveCamera(100, width / height, 1, 10000 );
         var screenWidth = window.innerWidth,
-                screenHeight = window.innerHeight,
-                viewAngle = 75,
-                nearDistance = 0.1,
-                farDistance = 1000;
+            screenHeight = window.innerHeight,
+            viewAngle = 75,
+            nearDistance = 0.1,
+            farDistance = 1000;
         //const camera = new THREE.OrthographicCamera(-width / 2, width / 2, height / 2, -height / 2, 0.01, 100000);
-        const camera = new THREE.PerspectiveCamera(viewAngle, screenWidth / 	screenHeight, nearDistance, farDistance);
+        const camera = new THREE.PerspectiveCamera(viewAngle, screenWidth / screenHeight, nearDistance, farDistance);
         scene.add(camera);
         camera.position.set(0, 0, 5);
         camera.lookAt(scene.position);
@@ -40,7 +48,7 @@ const Canvas = () => {
         });
         renderer.setSize(screenWidth, screenHeight);
         var container = document.getElementById('container');
-        container.appendChild(renderer.domElement); 
+        container.appendChild(renderer.domElement);
 
         /*
         let cameraControls = new OrbitControls( camera, renderer.domElement );
@@ -123,7 +131,7 @@ const Canvas = () => {
         redBall.position.z = -5;
         scene.add(redBall);
         */
-        
+
         // const connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
         // let connected = false;
         // const connection = SignalRConnection();
@@ -200,17 +208,15 @@ const Canvas = () => {
                 }
             }
             */
-            
-            if ((user == "red") && (mousePos.y <= 2.95) && (mousePos.y >= .05) && (pushUnit) && (unitsRed.length < units))
-            {
+
+            if ((user == "red") && (mousePos.y <= 2.95) && (mousePos.y >= .05) && (pushUnit) && (unitsRed.length < units)) {
                 unitsRed.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsRed.length } } });
                 const redBall = new THREE.Mesh(ballGeometry, unitRedMaterial);
                 scene.add(redBall);
                 redBall.position.copy(mousePos);
             }
 
-            if ((user == "blue") && (mousePos.y >= -2.95) &&(mousePos.y <= -0.05) && (pushUnit) && (unitsBlue.length < units))
-            {
+            if ((user == "blue") && (mousePos.y >= -2.95) && (mousePos.y <= -0.05) && (pushUnit) && (unitsBlue.length < units)) {
                 unitsBlue.push({ Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos, id: unitsBlue.length } } });
                 const blueBall = new THREE.Mesh(ballGeometry, unitBlueMaterial);
                 scene.add(blueBall);
@@ -243,16 +249,25 @@ const Canvas = () => {
             }
             */
 
-            /*
-            connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
-                return console.error(err.toString());
-            });
+            async function SendMessage() {
+                try {
+                    /*
+                    await connection.invoke("SendMessage", "red", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
+                        return console.error(err.toString());
+                    });
 
-            connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
-                return console.error(err.toString());
-            });
-            */
-            
+                    await connection.invoke("SendMessage", "blue", { Message: { Unit: { x: xPos, y: yPos, destX: xPos, destY: yPos }, Red: unitsRed, Blue: unitsBlue, Ball: ball } }).catch(function (err) {
+                        return console.error(err.toString());
+                    });
+                    */
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+
+            SendMessage();
+
             /*
             x = mousePos.x;
             y = mousePos.y;
@@ -275,8 +290,8 @@ const Canvas = () => {
 
             // Make the sphere follow the mouse
             var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-            vector.unproject( camera );
-            var dir = vector.sub( camera.position ).normalize();
+            vector.unproject(camera);
+            var dir = vector.sub(camera.position).normalize();
             var distance = - camera.position.z / dir.z;
             var pos = camera.position.clone().add(dir.multiplyScalar(distance));
 
@@ -286,8 +301,8 @@ const Canvas = () => {
         window.addEventListener('mouseup', onMouseClick);
 
         function animate() {
-			requestAnimationFrame(animate);
-			render(scene, camera);
+            requestAnimationFrame(animate);
+            render(scene, camera);
         }
 
         // Rendering function
@@ -302,24 +317,25 @@ const Canvas = () => {
 
         animate();
 
-        /*
         setInterval(() => {
             animate();
         }, 1000 / 60);
-        */
 
         return () => {
             /*mountRef.current.removeChild(renderer.domElement);*/
         }
     }, []);
 
-    if (!mountRef.current) {
+    /*
+    if (mountRef.current) {
         return (
+            <></>
             <div id="maincontent" >
                 <div id="container" ></div>
             </div>
         );
     }
+    */
 }
 
 Canvas.propTypes = {

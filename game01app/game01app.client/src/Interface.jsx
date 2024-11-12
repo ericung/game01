@@ -1,6 +1,7 @@
 import { useEffect, useContext, useRef } from 'react';
-import { SignalRConnection } from './Signalr';
+import * as signalR from "@microsoft/signalr";
 import { Context } from "./Context";
+import signalRConnection from "./Signalr";
 
 const Interface = () => {
     const { connection, setConnection, user, setUser } = useContext(Context);
@@ -8,28 +9,21 @@ const Interface = () => {
 
     useEffect(() => {
         if (!mountRef.current) {
-            const getConnection = async () => {
-                const connection = await SignalRConnection();
-                setConnection(connection);
-
-                await connection.invoke("Connect").catch(function (err) {
-                    return console.error(err.toString());
-                });
-
-                setConnection(connection);
-                document.getElementById("network").value = connection.id;
-            };
-
-            getConnection();
+            mountRef.current = true;
             return () => {
-                mountRef.current = true;
             };
         }
-        
+
+        setConnection(signalRConnection.connection);
+
+        if (connection && connection.state === signalR.HubConnectionState.Connected) {
+            document.getElementById("network").value = connection.id;
+        }
+
         return () => {
             //conn.stop();
         }
-    });
+    }, []);
 
     // REGION: GroupActions
 
@@ -50,8 +44,6 @@ const Interface = () => {
             await connection.invoke("JoinGroup", connection.id === null ? "" : connection.id, newGroup).catch(function (err) {
                 return console.error(err.toString());
             });
-
-            setConnection(connection);
 
             await connection.invoke("GetGroups", connection.id).catch(function (err) {
                 return console.error(err.toString());
