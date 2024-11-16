@@ -103,6 +103,11 @@ namespace Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
+            if (!ConnectionMap.ContainsKey(Context.ConnectionId))
+            {
+                return base.OnDisconnectedAsync(exception);
+            }
+
             var groupName = ConnectionMap[Context.ConnectionId].Group ?? String.Empty;
             ConnectionMap.TryRemove(Context.ConnectionId, out _);
             GroupMap.TryRemove(groupName, out _);

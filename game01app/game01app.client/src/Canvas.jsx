@@ -3,14 +3,14 @@ import * as signalR from "@microsoft/signalr";
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { Context } from "./Context";
-import signalRConnection from "./Signalr";
+import { SignalRConnection } from "./Signalr";
 /*
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 */
 
 const Canvas = () => {
-    const { connection, setConnection, user /*, setUser*/ } = useContext(Context);
+    const { connectionId, setConnectionId, user /*, setUser*/ } = useContext(Context);
     const mountRef = useRef(false);
 
     useEffect(() => {
@@ -20,11 +20,6 @@ const Canvas = () => {
                 <>
                 </>
             };
-        }
-
-        if ((!connection) || (connection.state !== signalR.HubConnectionState.Connected)) {
-            signalRConnection.startSignalRConnection();
-            setConnection(signalRConnection.connection);
         }
 
         //const stats = new Stats();
@@ -153,7 +148,8 @@ const Canvas = () => {
             var yPos = mousePos.y;
             //var radius = Math.pow(40, 2);
             var pushUnit = true;
-            var units = document.getElementById("units").value;
+            // var units = document.getElementById("units").value;
+            var units = 50;
 
             for (let i = 0; i < unitsRed.length; i++) {
                 if ((distance(unitsRed[i].Message.Unit.x, xPos, unitsRed[i].Message.Unit.y, yPos) < 0.43) && (pushUnit)) {

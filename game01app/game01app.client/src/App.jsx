@@ -9,8 +9,8 @@ const App = () => {
             <div id="maincontent" >
                 <div id="container" ></div>
             </div>
-            <Canvas/>
             <Interface/>
+            <Canvas/>
         </>
     );
 }

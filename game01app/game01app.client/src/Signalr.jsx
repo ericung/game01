@@ -4,16 +4,11 @@ import {
   LogLevel,
   HttpTransportType
 } from '@microsoft/signalr';
-import * as signalR from "@microsoft/signalr";
 
 const URL = "https://localhost:7276/messageHub";
 
-class SignalRConnection  {
+export class SignalRConnection  {
     constructor() {
-        this.connection = null;
-    }
-
-    startSignalRConnection = () => {
         let connected = false;
 
         const options = {
@@ -22,61 +17,59 @@ class SignalRConnection  {
             transport: HttpTransportType.WebSockets
         };
 
-        this.connection = new HubConnectionBuilder()
+         const connection = new HubConnectionBuilder()
             .withUrl(URL, options)
             .withAutomaticReconnect()
             .withHubProtocol(new JsonHubProtocol())
             .configureLogging(LogLevel.Information)
             .build();
 
-        this.connection.serverTimeoutInMilliseconds = 60000;
-        this.connection.keepAliveIntervalInMilliseconds = 15000;
+        connection.serverTimeoutInMilliseconds = 60000;
+        connection.keepAliveIntervalInMilliseconds = 15000;
 
         const startSignalRConnection = async () => {
             try {
-                if (this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
-                    await this.connection.start().then(function () {
-                        connected = true;
-                    }).catch(function () {
-                        return "";
-                    });
-                }
+                await connection.start().then(function () {
+                    connected = true;
+                }).catch(function () {
+                    return "";
+                });
             } catch (err) {
                 console.log(err.toString());
-                setTimeout(() => startSignalRConnection(this.connection), 5000);
+                setTimeout(() => startSignalRConnection(connection), 5000);
             }
         };
 
-        this.connection.on("ReceiveMessage", function (user, message) {
+        connection.on("ReceiveMessage", function (user, message) {
             if (message.Message.Blue !== undefined) {
-                this.connection.unitsBlue = message.Message.Blue;
+                connection.unitsBlue = message.Message.Blue;
             }
 
             if (message.Message.Red !== undefined) {
-                this.connection.unitsRed = message.Message.Red;
+                connection.unitsRed = message.Message.Red;
             }
 
             if (message.Message.Ball !== undefined) {
-                this.connection.ball = message.Message.Ball;
+                connection.ball = message.Message.Ball;
             }
 
             // send draw event
             // draw()
         });
 
-        this.connection.on("Connected", function (userInfo) {
-            this.connection.id = userInfo.this.connectionId;
+        connection.on("Connected", function (userInfo) {
+            connection.id = userInfo.connectionId;
         });
 
-        this.connection.on("JoinedGroup", async function (userInfo) {
-            this.connection.user = userInfo.userName;
-            this.connection.group = userInfo.group;
+        connection.on("JoinedGroup", async function (userInfo) {
+            connection.user = userInfo.userName;
+            connection.group = userInfo.group;
         });
 
-        this.connection.on("RemovedGroup", function () {
+        connection.on("RemovedGroup", function () {
         });
 
-        this.connection.on("SendGroupList", function (groupList) {
+        connection.on("SendGroupList", function (groupList) {
             var groups = document.getElementById("groupList");
             while (groups.options.length) {
                 groups.remove(0);
@@ -88,14 +81,13 @@ class SignalRConnection  {
             }
         });
 
-        this.connection.onclose(async () => {
-            await startSignalRConnection();
+        connection.onclose(async () => {
+            // await startSignalRConnection();
         });
 
-        return this.connection;
+        startSignalRConnection();
+
+        return connection;
     }
 };
 
-const signalRConnection = new SignalRConnection();
-
-export default signalRConnection;
