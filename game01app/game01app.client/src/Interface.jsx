@@ -1,6 +1,6 @@
 import { useEffect, useContext, useRef } from 'react';
 import * as signalR from "@microsoft/signalr";
-import { Context } from "./Context";
+import { Context } from "./SignalRContext";
 import { SignalRConnection } from "./Signalr";
 
 const Interface = () => {
