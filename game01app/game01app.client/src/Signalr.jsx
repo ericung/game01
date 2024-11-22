@@ -71,9 +71,11 @@ export class SignalRConnection  {
 
         connection.on("SendGroupList", function (groupList) {
             var groups = document.getElementById("groupList");
+
             while (groups.options.length) {
                 groups.remove(0);
             }
+
             var options = groups.options;
             options[0] = new Option("", "");
             for (let i = 0; i < groupList.length; i++) {

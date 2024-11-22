@@ -1,10 +1,8 @@
 import { useEffect, useContext, useRef } from 'react';
-import * as signalR from "@microsoft/signalr";
-import { Context } from "./SignalRContext";
-import { SignalRConnection } from "./Signalr";
+import { ConnectionContext } from "./ConnectionContext";
 
 const Interface = () => {
-    const { connectionId, /*setConnectionId, */user/*, setUser*/ } = useContext(Context);
+    const { connection, /*setConnectionId, */user/*, setUser*/ } = useContext(ConnectionContext);
     const mountRef = useRef(false);
 
     useEffect(() => {
@@ -98,7 +96,7 @@ const Interface = () => {
     // ENDREGION: GroupActions
 
     return (
-        <>
+        <div>
             <div>
                 <div id="menuleftcontent">
                     <form>
@@ -123,7 +121,7 @@ const Interface = () => {
                     </form>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

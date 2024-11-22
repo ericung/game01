@@ -1,9 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext } from "react";
 
-const ConnectionContext = createContext({
+export const ConnectionContext = createContext({
     connection: null,
-    setConnection: () => {}
+    setConnection: () => { },
+    user: null, 
+    setUser: () => { }
 });
 
-export default { ConnectionContext };

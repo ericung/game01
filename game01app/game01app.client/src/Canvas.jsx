@@ -1,16 +1,14 @@
 import { useEffect, useContext, useRef } from 'react';
-import * as signalR from "@microsoft/signalr";
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
-import { Context } from "./SignalRContext";
-import { SignalRConnection } from "./Signalr";
+import { ConnectionContext } from "./ConnectionContext";
 /*
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 */
 
 const Canvas = () => {
-    const { connectionId, setConnectionId, user /*, setUser*/ } = useContext(Context);
+    const { connection, setConnection, user /*, setUser*/ } = useContext(ConnectionContext);
     const mountRef = useRef(false);
 
     useEffect(() => {
